@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block main_content %}
+    <div class="btn-group">
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Сортувати за:<span class="caret"></span></button>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="/?sort=price">ціною</a></li>
+    <li><a href="/?sort=name">ім'ям</a></li>
+    <li><a href="#">датою</a></li>
+  </ul>
+</div>
+    {% for product_image in products_image %}
+      <div>
+          <div class="col-md-3 col-lg-offset-0">
+            <h4>{{ product_image.product.name  }}</h4>
+              <img src="{{ product_image.image.url }}" width="300" align="center">
+              <p>{{ product_image.product.short_description|truncatechars_html:70 }}</p>
+              <h4><b>Ціна: </b>{{ product_image.product.price }} грн</h4>
+              <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          </div>
+        </div>
+
+    {% endfor %}
+
+{% endblock main_content %}
