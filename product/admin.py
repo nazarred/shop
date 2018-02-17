@@ -15,6 +15,7 @@ admin.site.register(ProductImage)
 
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline]
+    list_display = ['name', 'add_date', 'average_rating', 'price']
 
     class Meta:
         model = Product

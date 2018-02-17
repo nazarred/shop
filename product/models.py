@@ -7,14 +7,25 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     short_description = models.TextField(blank=True, null=True, default=None)
     description = models.TextField(blank=True, null=True, default=None)
-    rating = models.CharField(max_length=6, default='none', choices=(
-        ('none', 0),
-        ('one', 1),
-        ('two', 2),
-        ('three', 3),
-        ('four', 4),
-        ('five', 5),
+    rating = models.CharField(max_length=6, default='0', choices=(
+        ('0', 0),
+        ('1', 1),
+        ('2', 2),
+        ('3', 3),
+        ('4', 4),
+        ('5', 5),
     ))
+    sum_rating = models.FloatField(default=0)
+    average_rating = models.FloatField(default=0)
+    nmb_of_rating = models.PositiveIntegerField(default=0)
+    add_date = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        try:
+            self.average_rating = self.sum_rating/self.nmb_of_rating
+        except ZeroDivisionError:
+            pass
+        super(Product, self).save(*args, **kwargs)
 
     def __str__(self):
         return "%s" % self.name

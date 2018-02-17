@@ -6,22 +6,51 @@
 
 
 {% block main_content %}
-    <div class="btn-group">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Сортувати за:<span class="caret"></span></button>
-  <ul class="dropdown-menu" role="menu">
-    <li><a href="/?sort=price">ціною</a></li>
-    <li><a href="/?sort=name">ім'ям</a></li>
-    <li><a href="#">датою</a></li>
-  </ul>
-</div>
+{#    <div class="btn-group">#}
+{#  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Сортувати за:<span class="caret"></span></button>#}
+{#  <ul class="dropdown-menu" role="menu">#}
+{#    <li>#}
+{#        <a href="/?sort=price&reverse=0">ціною <span class="glyphicon glyphicon-arrow-up"></span></a>#}
+{#        <a href="/?sort=price&reverse=1"> <span class="glyphicon glyphicon-arrow-down"></span></a>#}
+{#    </li>#}
+{#    <li><a href="/?sort=average_rating">рейтингом</a></li>#}
+{#    <li><a href="/?sort=name">ім'ям</a></li>#}
+{#    <li><a href="/?sort=add_date">датою</a></li>#}
+{#  </ul>#}
+{#    <a href="#&reverse=1"><</a></li>#}
+{#</div>#}
+    <div>
+    <h4>Сортувати за:</h4>
+      <ul>
+      Ціною:
+      <a href="/?sort=price&reverse=" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=price&reverse=1" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      Рейтингом:
+      <a href="/?sort=average_rating&reverse=" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=average_rating&reverse=1" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      Датою:
+      <a href="/?sort=add_date&reverse=" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=add_date&reverse=1" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      Ім'ям:
+      <a href="/?sort=name&reverse=" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=name&reverse=1" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      </ul>
+    </div>
     {% for product_image in products_image %}
       <div>
           <div class="col-md-3 col-lg-offset-0">
-            <h4>{{ product_image.product.name  }}</h4>
+            <h4>
+                <a href="{% url 'product:product_detail' pk=product_image.product.id %}">
+                    {{ product_image.product.name  }}
+                </a>
+            </h4>
               <img src="{{ product_image.image.url }}" width="300" align="center">
               <p>{{ product_image.product.short_description|truncatechars_html:70 }}</p>
               <h4><b>Ціна: </b>{{ product_image.product.price }} грн</h4>
-              <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+              <h4><b>Рейтинг: </b>{{ product_image.product.average_rating|floatformat:1 }}</h4>
+              <p>
+                  <a class="btn btn-default" href="{% url 'product:product_detail' pk=product_image.product.id %}" role="button">Детальніше &raquo;</a>
+              </p>
           </div>
         </div>
 
