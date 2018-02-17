@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from .models import *
+from .forms import RatingModelForm
+from django.contrib import messages
 
 NMB_OF_PRODUCT = 6
 
@@ -13,4 +15,15 @@ def product_list(request):
 
 
 def product_detail(request, pk):
-    return render(request, 'main_page.html')
+    product = Product.objects.get(id=pk)
+    images = ProductImage.objects.filter(product=product, is_main=False)
+    main_image = ProductImage.objects.get(product=product, is_main=True)
+    form = RatingModelForm()
+    if request.method == 'POST':
+        if request.POST.get('rating', None):
+            form = RatingModelForm(request.POST, instance=product)
+            if form.is_valid():
+                item = form.save(commit=False)
+                item.rating_change()
+                messages.success(request, 'Ваша оінка врахована')
+    return render(request, 'product/product_detail.html', locals())

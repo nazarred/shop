@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block main_content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+
+
+                <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                  <!-- Indicators -->
+                  <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#myCarousel" data-slide-to="1"></li>
+                    <li data-target="#myCarousel" data-slide-to="2"></li>
+                  </ol>
+                  <div class="carousel-inner">
+                        <div class="item active">
+                          <img src="/{{ main_image.image.url }}" alt="First slide">
+                        </div>
+                        {% for image in images %}
+                         <div class="item">
+                            <img src="/{{ image.image.url }}" alt="First slide">
+                        </div>
+                        {% endfor %}
+                  </div>
+                  </div>
+                  <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                  <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                </div>
+
+            <div class="col-lg-6">
+                <h4 class="text-center">
+                    {{ product.name }}
+                </h4>
+                <div>
+                    <h4>
+                        <b>Ціна</b>{{ product.price }}
+                    </h4>
+                </div>
+                <form id="form_buying_product" action="{% url 'product:product_detail' pk=product.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="number" name="pcs"><span> шт. </span>
+                    <button type="submit" id="submit_btn" class="btn btn-success btn-buy">Купити</button>
+                </form>
+                <div>
+                    {% if messages %}
+                        <div class="alert alert-success" align="left">
+                          <ul class="messages">
+                          {% for message in messages %}
+                              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                          {% endfor %}
+                          </ul>
+                        </div>
+                    {% endif %}
+                    <p>
+                        <b>Рейтинг:</b> {{ product.average_rating|floatformat:1 }}
+                    </p>
+                    {% if user.is_authenticated %}
+                        <div class="container">
+                        <p>Ваша оцінка:</p>
+                          <form class="form-horizontal" role="form" action="{% url 'product:product_detail' pk=product.id %}" method="post">
+                              {% csrf_token %}
+                              <div class="form-group">
+                              {{ form.as_table }}
+                              <input type="submit" class="btn btn-default navbar-btn" value="Оцінити" />
+                              </div>
+                          </form>
+                        </div>
+
+                    {% endif %}
+                </div>
+                <div>
+                      <!-- Nav tabs -->
+                      <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="#description" aria-controls="home" role="tab" data-toggle="tab">
+                                Опис
+                            </a>
+                      </ul>
+                      <!-- Tab panes -->
+                      <div class="tab-content product-description-tabs">
+                        <div role="tabpanel" class="tab-pane active" id="description">
+                            {{ product.description }}
+                        </div>
+                      </div>
+                </div>
+                <div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main_content %}

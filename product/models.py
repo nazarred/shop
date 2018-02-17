@@ -20,6 +20,11 @@ class Product(models.Model):
     nmb_of_rating = models.PositiveIntegerField(default=0)
     add_date = models.DateTimeField(auto_now_add=True)
 
+    def rating_change(self):
+        self.sum_rating += int(self.rating)
+        self.nmb_of_rating += 1
+        return self.save()
+
     def save(self, *args, **kwargs):
         try:
             self.average_rating = self.sum_rating/self.nmb_of_rating
