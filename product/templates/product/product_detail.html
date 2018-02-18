@@ -98,7 +98,11 @@
     </div>
 
   <div class="comments">
-    <h3 class="title-comments">Коментарi</h3>
+
+      <h3 class="title-comments">Коментарi</h3>
+
+
+
         {% for comment in comments %}
           <ul class="media">
             <div class="media-left">
@@ -117,5 +121,15 @@
             </div>
           </ul>
         {% endfor %}
+  {% if user.is_authenticated %}
+      <div><b>{{ user.username }}</b></div>
+      <form role="form" action="{% url 'product:product_detail' pk=product.id %}" method="post">
+          {% csrf_token %}
+            <div>
+              {{ comment_form.text }} <br>
+              <input type="submit" class="btn btn-default" value="Відправити" />
+            </div>
+      </form>
+  {% endif %}
   </div>
 {% endblock main_content %}

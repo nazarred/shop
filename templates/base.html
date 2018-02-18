@@ -39,14 +39,15 @@
         </div>
         <div class="navbar-collapse collapse">
           {% if user.is_authenticated %}
-               <p class="navbar-text navbar-right">Ви авторизовані як <b>{{ user.username }}</b> <a href="#" class="btn btn-success">Вихід</a></p>
+               <p class="navbar-text navbar-right">Ви авторизовані як <b>{{ user.username }}</b><a href="{% url 'logout' %}" class="btn btn-success">Вихід</a></p>
           {% else %}
-              <form class="navbar-form navbar-right" role="form">
+              <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'login' %}">
+                {% csrf_token %}
                 <div class="form-group">
-                  <input type="text" placeholder="Email" class="form-control">
+                  <input type="text" placeholder="Login" class="form-control" name="login">
                 </div>
                 <div class="form-group">
-                  <input type="password" placeholder="Password" class="form-control">
+                  <input type="password" placeholder="Password" class="form-control" name="password">
                 </div>
                 <button type="submit" class="btn btn-success">Sign in</button>
                 <a href="#" class="btn btn-success">Registration</a>

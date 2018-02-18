@@ -6,19 +6,22 @@
 
 
 {% block main_content %}
-{#    <div class="btn-group">#}
-{#  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Сортувати за:<span class="caret"></span></button>#}
-{#  <ul class="dropdown-menu" role="menu">#}
-{#    <li>#}
-{#        <a href="/?sort=price&reverse=0">ціною <span class="glyphicon glyphicon-arrow-up"></span></a>#}
-{#        <a href="/?sort=price&reverse=1"> <span class="glyphicon glyphicon-arrow-down"></span></a>#}
-{#    </li>#}
-{#    <li><a href="/?sort=average_rating">рейтингом</a></li>#}
-{#    <li><a href="/?sort=name">ім'ям</a></li>#}
-{#    <li><a href="/?sort=add_date">датою</a></li>#}
-{#  </ul>#}
-{#    <a href="#&reverse=1"><</a></li>#}
-{#</div>#}
+    {% if messages %}
+
+            <ul class="messages">
+                {% for message in messages %}
+                    <div align="left"
+                            {% if message.tags == 'error' %}
+                                class="alert alert-danger"
+                            {% else %}
+                                class="alert alert-success"
+                            {% endif %}>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </ul>
+
+    {% endif %}
     <div>
     <h4>Сортувати за:</h4>
       <ul>
