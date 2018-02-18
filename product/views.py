@@ -19,6 +19,7 @@ def product_detail(request, pk):
     images = ProductImage.objects.filter(product=product, is_main=False)
     main_image = ProductImage.objects.get(product=product, is_main=True)
     form = RatingModelForm()
+    comments = ProductComment.objects.filter(product=product)
     if request.method == 'POST':
         if request.POST.get('rating', None):
             form = RatingModelForm(request.POST, instance=product)

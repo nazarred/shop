@@ -43,6 +43,7 @@ class ProductComment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
 
+
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, blank=True, null=True, default=None)
     image = models.ImageField(upload_to='static/products_images/')
