@@ -2,6 +2,11 @@ from django.contrib import admin
 from .models import *
 
 
+class ProductRatingInline(admin.TabularInline):
+    model = ProductRating
+    extra = 0
+
+
 class ProductCommentInline(admin.TabularInline):
     model = ProductComment
     extra = 0
@@ -26,7 +31,7 @@ admin.site.register(ProductImage)
 
 
 class ProductAdmin(admin.ModelAdmin):
-    inlines = [ProductImageInline, ProductCommentInline]
+    inlines = [ProductImageInline, ProductCommentInline, ProductRatingInline]
     list_display = ['name', 'add_date', 'average_rating', 'price']
 
     class Meta:
@@ -34,3 +39,5 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Product, ProductAdmin)
+
+admin.site.register(ProductRating)

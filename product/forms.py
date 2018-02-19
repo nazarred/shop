@@ -5,7 +5,7 @@ from django.forms import Textarea
 
 class RatingModelForm(forms.ModelForm):
     class Meta:
-        model = Product
+        model = ProductRating
         fields = ['rating']
 
 

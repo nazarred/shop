@@ -21,9 +21,9 @@
                   </ol>
                   <div class="carousel-inner">
                         <div class="item active">
-                          <img src="/{{ main_image.image.url }}" alt="First slide">
+                          <img src="/{{ product.get_main_image.image.url }}" alt="First slide">
                         </div>
-                        {% for image in images %}
+                        {% for image in product.get_not_main_images %}
                          <div class="item">
                             <img src="/{{ image.image.url }}" alt="First slide">
                         </div>

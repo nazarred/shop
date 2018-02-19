@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import *
-from .forms import RatingModelForm, CommentModelForm
+from .forms import *
 from django.contrib import messages, auth
 
 NMB_OF_PRODUCT = 6
@@ -28,23 +28,24 @@ def login(request):
 
 def product_list(request):
     sort = request.GET.get('sort', 'name')
-    products_image = ProductImage.objects.filter(is_main=True).order_by('product__%s' % sort)[:NMB_OF_PRODUCT]
+    products = Product.objects.all().order_by('%s' % sort)[:NMB_OF_PRODUCT]
     if request.GET.get('reverse', ''):
-        products_image = products_image.reverse()
+        products = products.reverse()
     return render(request, 'main_page.html', locals())
 
 
 def product_detail(request, pk):
     product = Product.objects.get(id=pk)
-    images = ProductImage.objects.filter(product=product, is_main=False)
-    main_image = ProductImage.objects.get(product=product, is_main=True)
     comments = ProductComment.objects.filter(product=product)
     if request.method == 'POST':
         if request.POST.get('rating', None):
-            form = RatingModelForm(request.POST, instance=product)
+            form = RatingModelForm(request.POST)
             if form.is_valid():
-                item = form.save(commit=False)
-                item.rating_change()
+                rating = form.save(commit=False)
+                rating.product = product
+                rating.user = auth.get_user(request)
+                rating.save()
+                product.save()
                 messages.success(request, 'Ваша оінка врахована')
         if request.POST.get('text', None):
             comment_form = CommentModelForm(request.POST)
@@ -55,5 +56,5 @@ def product_detail(request, pk):
                 comment.save()
     else:
         form = RatingModelForm()
-        comment_form = CommentModelForm()
+    comment_form = CommentModelForm()
     return render(request, 'product/product_detail.html', locals())
