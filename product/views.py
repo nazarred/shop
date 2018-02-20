@@ -1,9 +1,29 @@
-from django.contrib import messages, auth
-from django.shortcuts import render
-
+from django.shortcuts import render, redirect
+from .models import *
 from .forms import *
+from django.contrib import messages, auth
 
 NMB_OF_PRODUCT = 6
+
+
+def logout(request):
+    auth.logout(request)
+    return redirect('/')
+
+
+def login(request):
+    username = request.POST.get('login', '')
+    password = request.POST.get('password', '')
+    print(request.POST)
+    if request.method == 'POST' and username and password:
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+            messages.success(request, 'Ви успішно авторизовані')
+            return redirect('/')
+        else:
+            messages.error(request, 'Невірний логін або пароль')
+    return redirect('/')
 
 
 def product_list(request):
@@ -17,6 +37,11 @@ def product_list(request):
 def product_detail(request, pk):
     product = Product.objects.get(id=pk)
     comments = ProductComment.objects.filter(product=product)
+    if request.user.is_authenticated():
+        try:
+            users_rating = product.productrating_set.get(user=request.user)
+        except ProductRating.DoesNotExist:
+            users_rating = None
     if request.method == 'POST':
         if request.POST.get('rating', None):
             form = RatingModelForm(request.POST)
@@ -34,7 +59,8 @@ def product_detail(request, pk):
                 comment.user = request.user
                 comment.product = product
                 comment.save()
+        return redirect('product:product_detail', pk=product.id)
     else:
         form = RatingModelForm()
-    comment_form = CommentModelForm()
+        comment_form = CommentModelForm()
     return render(request, 'product/product_detail.html', locals())

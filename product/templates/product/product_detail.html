@@ -63,16 +63,19 @@
                     </p>
                     {% if user.is_authenticated %}
                         <div class="container">
-                        <p>Ваша оцінка:</p>
-                          <form class="form-horizontal" role="form" action="{% url 'product:product_detail' pk=product.id %}" method="post">
-                              {% csrf_token %}
-                              <div class="form-group">
-                              {{ form.as_table }}
-                              <input type="submit" class="btn btn-default navbar-btn" value="Оцінити" />
-                              </div>
-                          </form>
+                        {% if not users_rating %}
+                            <p>Ваша оцінка:</p>
+                              <form class="form-horizontal" role="form" action="{% url 'product:product_detail' pk=product.id %}" method="post">
+                                  {% csrf_token %}
+                                  <div class="form-group">
+                                  {{ form.as_table }}
+                                  <input type="submit" class="btn btn-default navbar-btn" value="Оцінити" />
+                                  </div>
+                              </form>
+                        {% else %}
+                            <p>Ваша оцінка:{{ users_rating.rating }}</p>
+                        {% endif %}
                         </div>
-
                     {% endif %}
                 </div>
                 <div>

@@ -47,21 +47,3 @@ def register(request):
 #     else:
 #         form = ProfileForm()
 #     return render(request, 'profile/detail_register.html', locals())
-def logout(request):
-    auth.logout(request)
-    return redirect('/')
-
-
-def login(request):
-    username = request.POST.get('login', '')
-    password = request.POST.get('password', '')
-    print(request.POST)
-    if request.method == 'POST' and username and password:
-        user = auth.authenticate(username=username, password=password)
-        if user is not None:
-            auth.login(request, user)
-            messages.success(request, 'Ви успішно авторизовані')
-            return redirect('/')
-        else:
-            messages.error(request, 'Невірний логін або пароль')
-    return redirect('/')
