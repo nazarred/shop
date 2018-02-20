@@ -35,7 +35,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">SHOP</a>
+          <a class="navbar-brand" href="/">SHOP</a>
         </div>
         <div class="navbar-collapse collapse">
           {% if user.is_authenticated %}
@@ -50,7 +50,7 @@
                   <input type="password" placeholder="Password" class="form-control" name="password">
                 </div>
                 <button type="submit" class="btn btn-success">Sign in</button>
-                <a href="#" class="btn btn-success">Registration</a>
+                <a href="{% url 'profile:registration' %}" class="btn btn-success">Registration</a>
               </form>
           {% endif %}
         </div><!--/.navbar-collapse -->

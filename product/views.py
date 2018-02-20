@@ -1,29 +1,9 @@
-from django.shortcuts import render, redirect
-from .models import *
-from .forms import *
 from django.contrib import messages, auth
+from django.shortcuts import render
+
+from .forms import *
 
 NMB_OF_PRODUCT = 6
-
-
-def logout(request):
-    auth.logout(request)
-    return redirect('/')
-
-
-def login(request):
-    username = request.POST.get('login', '')
-    password = request.POST.get('password', '')
-    print(request.POST)
-    if request.method == 'POST' and username and password:
-        user = auth.authenticate(username=username, password=password)
-        if user is not None:
-            auth.login(request, user)
-            messages.success(request, 'Ви успішно авторизовані')
-            return redirect('/')
-        else:
-            messages.error(request, 'Невірний логін або пароль')
-    return redirect('/')
 
 
 def product_list(request):

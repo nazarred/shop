@@ -17,8 +17,6 @@ class Product(models.Model):
     def get_not_main_images(self):
         return self.productimage_set.filter(is_main=False)
 
-
-
     def save(self, *args, **kwargs):
         self.average_rating = self.productrating_set.all().aggregate(Avg('rating'))['rating__avg']
         super(Product, self).save(*args, **kwargs)
