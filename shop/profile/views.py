@@ -1,0 +1,53 @@
+from django.contrib import auth, messages
+from django.contrib.auth import authenticate
+from django.shortcuts import render, redirect
+from .forms import UserRegistrationForm, ProfileForm
+
+
+def register(request):
+    if request.user.is_authenticated():
+        messages.error(request, 'Ви вже зареєстровані')
+        return redirect('product_list')
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        # form = UserCreationForm(request.POST)
+        profile_form = ProfileForm(request.POST)
+        if form.is_valid() and profile_form.is_valid():
+            new_user = form.save(commit=False)
+            new_user.set_password(form.cleaned_data['password'])
+            new_user.save()
+            # new_user.groups = ['1']  # присвоюється група "Покупці"
+            my_password = form.cleaned_data['password']
+            user = authenticate(username=new_user.username, password=my_password)
+            if user is not None:
+                auth.login(request, user)
+            new_profile = profile_form.save(commit=False)
+            new_profile.user = user
+            new_profile.save()
+            messages.success(request, 'Ви успішно зареєстровані та авторизовані')
+            return redirect('product_list')
+    else:
+        form = UserRegistrationForm()
+        # form = UserCreationForm(request.POST)
+        profile_form = ProfileForm()
+    return render(request, 'profile/register.html', locals())
+
+
+def logout(request):
+    auth.logout(request)
+    return redirect('/')
+
+
+def login(request):
+    username = request.POST.get('login', '')
+    password = request.POST.get('password', '')
+    print(request.POST)
+    if request.method == 'POST' and username and password:
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+            messages.success(request, 'Ви успішно авторизовані')
+            return redirect('/')
+        else:
+            messages.error(request, 'Невірний логін або пароль')
+    return redirect('/')

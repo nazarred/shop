@@ -11,6 +11,12 @@ class Product(models.Model):
     average_rating = models.FloatField(default=0)
     add_date = models.DateTimeField(auto_now_add=True)
 
+    def get_nmb_of_rating(self):
+        return self.productrating_set.all().count()
+
+    def get_avg_rating_in_px(self):
+        return 160*self.average_rating/5
+
     def get_main_image(self):
         return self.productimage_set.get(is_main=True)
 

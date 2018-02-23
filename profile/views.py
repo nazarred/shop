@@ -32,7 +32,7 @@ def register(request):
         form = UserRegistrationForm()
         # form = UserCreationForm(request.POST)
         profile_form = ProfileForm()
-    return render(request, 'profile/register.html', locals())
+    return render(request, 'profile/templates/profile/register.html', locals())
 
 
 # def detail_register(request, pk):

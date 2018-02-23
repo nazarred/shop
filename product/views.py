@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .models import *
 from .forms import *
@@ -31,7 +32,7 @@ def product_list(request):
     products = Product.objects.all().order_by('%s' % sort)[:NMB_OF_PRODUCT]
     if request.GET.get('reverse', ''):
         products = products.reverse()
-    return render(request, 'main_page.html', locals())
+    return render(request, '../templates/main_page.html', locals())
 
 
 def product_detail(request, pk):
@@ -63,4 +64,11 @@ def product_detail(request, pk):
     else:
         form = RatingModelForm()
         comment_form = CommentModelForm()
-    return render(request, 'product/product_detail.html', locals())
+    return render(request, 'product/templates/product/product_detail.html', locals())
+
+
+def rating_change(request):
+    return_dict = {}
+    session_key = request.session.session_key
+    print(request.POST)
+    return JsonResponse(return_dict)

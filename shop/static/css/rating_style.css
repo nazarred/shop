@@ -1,0 +1,25 @@
+.rating {
+    background-image: url("../images/stars.png");
+    background-position: top;
+    width: 160px;
+    height: 32px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+.avg {
+    height: 32px;
+    background-image: url("../images/stars.png");
+    background-position-y: bottom;
+
+}
+
+.rating-active {
+    position: relative;
+    top: 0px;
+    height: 32px;
+    width: 160px;
+    background-image: url("../images/stars.png");
+    background-position-y: center;
+
+
+}

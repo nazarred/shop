@@ -38,3 +38,4 @@ class UserRegistrationForm(forms.ModelForm):
         return cd['password']
 
 
+

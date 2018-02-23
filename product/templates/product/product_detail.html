@@ -61,11 +61,32 @@
                     <p>
                         <b>Рейтинг:</b> {{ product.average_rating|floatformat:1 }}
                     </p>
+
+
+                    <div id="rating_3">
+                        <div class="vote-wrap">
+                            <div class="vote-hover" id="125" style="padding: 0px 4px; height: 32px; width: 160px;">
+                                <div class="vote-block">
+                                    <div class="vote-stars" style="height: 32px; width: 160px; background: url(../../../static/rating/images/stars.png) left top;"></div>
+                                    <div class="vote-active" style="height: 32px; width: {{ product.get_avg_rating_in_px|floatformat:'0' }}px; background: url(../../../static/rating/images/stars.png) left bottom;"></div>
+                                    <div class="vote-now hidden" style="height: 32px; width: 160px; background: url(../../../static/rating/images/stars.png) left center;"></div>
+
+                                </div>
+                            </div>
+                            <div class="vote-result">{{ product.get_nmb_of_rating }} голосів</div><div class="vote-success"></div></div></div>
+
+
                     {% if user.is_authenticated %}
                         <div class="container">
                         {% if not users_rating %}
                             <p>Ваша оцінка:</p>
-                              <form class="form-horizontal" role="form" action="{% url 'product:product_detail' pk=product.id %}" method="post">
+                              <form
+                                      class="form-horizontal" role="form"
+                                      action="{% url 'product:rating_change' %}"
+                                      method="post" id="rating_form"
+                                      data-product_id="{{ product.id }}"
+
+                              >
                                   {% csrf_token %}
                                   <div class="form-group">
                                   {{ form.as_table }}
