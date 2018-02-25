@@ -32,9 +32,11 @@ $(document).ready(function() {
                 cache: true,
                 success: function (data) {
                     rating = data.r_rating;
+                    var avg_rating = (Math.round(data.avg_rating*10)/10).toFixed(1)
                     voted_now = 1;
-                    $('#product_avg_rating').text(data.avg_rating);
+                    $('#product_avg_rating').text(avg_rating);
                     $('.avg').width(data.px_rating);
+                    console.log(avg_rating)
                 },
 
                 error: function(){
@@ -42,29 +44,15 @@ $(document).ready(function() {
                 }
             });
             });
-
+        function roundTo32(num) {
+            return Math.round(num/32)*32;
+        }
 
         $('.rating').mousemove(function(e){
             var rating_active = $('.rating-active');
             var pos = $(this).offset();
             var star_left = pos.left;
-            // !!!!!!!!!!!
-            if (e.pageX - star_left< 32) {
-                rating_width = 32;
-            }
-            else if (e.pageX - star_left < 64) {
-                rating_width = 64;
-            }
-            else if (e.pageX - star_left < 96) {
-                rating_width = 96;
-            }
-            else if (e.pageX - star_left < 128) {
-                rating_width = 128;
-            }
-            else if (e.pageX - star_left < 160) {
-                rating_width = 160;
-            }
-            // !!!!!!!!!!!
+            rating_width = roundTo32(e.pageX - star_left);
             if (voted_now){
 
                 $('#your_rating').text("Ви вже голосували оцінка: "+rating);

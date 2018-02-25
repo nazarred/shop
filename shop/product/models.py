@@ -19,14 +19,18 @@ class Product(models.Model):
         return 160*avg/5
 
     def get_main_image(self):
-        return self.productimage_set.get(is_main=True)
+        return self.images.get(is_main=True)
 
     def get_not_main_images(self):
-        return self.productimage_set.filter(is_main=False)
+        return self.images.filter(is_main=False)
 
     def save(self, *args, **kwargs):
         self.average_rating = self.productrating_set.all().aggregate(Avg('rating'))['rating__avg']
         super(Product, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        from django.core.urlresolvers import reverse
+        return reverse('product:product_detail', args=[str(self.id)])
 
     def __str__(self):
         return "%s" % self.name
@@ -56,7 +60,7 @@ class ProductComment(models.Model):
 
 
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, blank=True, null=True, default=None)
+    product = models.ForeignKey(Product, blank=True, related_name='images')
     image = models.ImageField(upload_to='static/products_images/')
     is_main = models.BooleanField(default=False)
 
