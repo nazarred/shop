@@ -11,6 +11,9 @@ class Product(models.Model):
     average_rating = models.FloatField(default=0, null=True, blank=True)
     add_date = models.DateTimeField(auto_now_add=True)
 
+    def get_comments(self):
+        return self.productcomment_set.all().select_related('user')
+
     def get_nmb_of_rating(self):
         return self.productrating_set.all().count()
 

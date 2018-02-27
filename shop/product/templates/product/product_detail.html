@@ -69,7 +69,7 @@
                               method="post" id="rating_form"
                               data-product_id="{{ product.id }}"
                               data-user="{{ user.username }}"
-                              data-user_rating="{{ users_rating.rating }}"
+                              data-user_rating="{{ user_rating.rating }}"
                               >
                             {% csrf_token %}
                         <div class="rating" da>
@@ -110,7 +110,7 @@
 
 
 
-        {% for comment in comments %}
+        {% for comment in product.get_comments %}
           <ul class="media">
             <div class="media-left">
             </div>
@@ -130,10 +130,10 @@
         {% endfor %}
   {% if user.is_authenticated %}
       <div><b>{{ user.username }}</b></div>
-      <form role="form" action="{% url 'product:product_detail' pk=product.id %}" method="post">
+      <form role="form" action="{% url 'product:comments' pk=product.id %}" method="post">
           {% csrf_token %}
             <div>
-              {{ comment_form.text }} <br>
+              {{ form.text }} <br>
               <input type="submit" class="btn btn-default" value="Відправити" />
             </div>
       </form>

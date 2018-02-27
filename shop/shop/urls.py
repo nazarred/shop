@@ -22,7 +22,7 @@ from product import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', views.product_list, name='product_list'),
+    url(r'^$', views.ProductsList.as_view(), name='product_list'),
     url(r'^product/', include('product.urls', namespace='product')),
     url(r'^logout/', profile.views.logout, name='logout'),
     url(r'^login/', profile.views.login, name='login'),
