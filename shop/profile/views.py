@@ -1,13 +1,13 @@
 from django.contrib import auth, messages
 from django.contrib.auth import authenticate
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.views.generic import CreateView
 
 from .forms import UserRegistrationForm, ProfileForm
+from .mixins import NotLoginRequiredMixin
 
 
-# треба ще зробити, щоб авторизовані користувачі не заходили сюди
-class RegisterView(CreateView):
+class RegisterView(NotLoginRequiredMixin, CreateView):
     form_class = UserRegistrationForm
     template_name = 'profile/register.html'
     success_url = '/'

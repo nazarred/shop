@@ -21,7 +21,7 @@
                   </ol>
                   <div class="carousel-inner">
                         <div class="item active">
-                          <img src="/{{ product.get_main_image.image.url }}" alt="First slide">
+                          <img src="/{{ product.main_image.image.url }}" alt="First slide">
                         </div>
                         {% for image in product.get_not_main_images %}
                          <div class="item">
@@ -72,7 +72,7 @@
                               data-user_rating="{{ user_rating.rating }}"
                               >
                             {% csrf_token %}
-                        <div class="rating" da>
+                        <div class="rating">
                             <div class="avg" style="width: {{ product.get_avg_rating_in_px|floatformat:'0' }}px">
                             </div>
                             <div class="rating-active hidden"></div>

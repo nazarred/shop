@@ -37,6 +37,11 @@ class ProductAdmin(admin.ModelAdmin):
     class Meta:
         model = Product
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(ProductAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['main_image'].queryset = obj.images.all()
+        return form
+
 
 admin.site.register(Product, ProductAdmin)
 

@@ -4,33 +4,24 @@ from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import ListView, DetailView
 
 from .forms import CommentModelForm
-from .models import Product, ProductComment, ProductRating, ProductImage
+from .models import Product, ProductRating
 
 NMB_OF_PRODUCT = 6
 
 
 class ProductsList(ListView):
-    model = ProductImage
+    model = Product
     template_name = 'main_page.html'
-    context_object_name = 'products_images'
+    context_object_name = 'products'
 
     def get_queryset(self):
         qs = super().get_queryset()
         sort = self.request.GET.get('sort', 'name')
-        qs = qs.filter(is_main=True).order_by('product__%s' % sort).select_related(
-            'product')[:NMB_OF_PRODUCT]
+        qs = qs.order_by('%s' % sort)[:NMB_OF_PRODUCT].select_related('main_image')
         if self.request.GET.get('reverse', None):
             qs = qs.reverse()
         return qs
 
-
-# def product_list(request):
-#     sort = request.GET.get('sort', 'name')
-#     # products = Product.objects.all().order_by('%s' % sort).prefetch_related('images')[:NMB_OF_PRODUCT]
-#     products_images = ProductImage.objects.filter(is_main=True).order_by('product__%s' % sort).select_related('product')[:NMB_OF_PRODUCT]
-#     if request.GET.get('reverse', ''):
-#         products_images = products_images.reverse()
-#     return render(request, 'main_page.html', locals())
 
 class ProductDetailView(DetailView):
     model = Product

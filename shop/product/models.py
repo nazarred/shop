@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Avg
 
+WIDTH_OF_RATING_STAR = 32  # ширина однієї зірочки рейтинга (static/images/stars.png)
+
 
 class Product(models.Model):
     name = models.CharField(max_length=64, blank=True, null=True, default=None)
@@ -10,6 +12,7 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True, default=None)
     average_rating = models.FloatField(default=0, null=True, blank=True)
     add_date = models.DateTimeField(auto_now_add=True)
+    main_image = models.ForeignKey('ProductImage', related_name='prod')
 
     def get_comments(self):
         return self.productcomment_set.all().select_related('user')
@@ -19,10 +22,7 @@ class Product(models.Model):
 
     def get_avg_rating_in_px(self):
         avg = self.average_rating if self.average_rating else 0
-        return 160*avg/5
-
-    def get_main_image(self):
-        return self.images.get(is_main=True)
+        return WIDTH_OF_RATING_STAR*avg
 
     def get_not_main_images(self):
         return self.images.filter(is_main=False)
@@ -68,4 +68,5 @@ class ProductImage(models.Model):
     is_main = models.BooleanField(default=False)
 
     def __str__(self):
-        return "%s" % self.product
+        main = '(Головна)' if self.is_main else ''
+        return "%s... %s" % (self.product.name[:15], main)
