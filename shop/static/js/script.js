@@ -2,8 +2,10 @@ $(document).ready(function() {
     var form = $('#rating_form');
     var voted = 0;
     var voted_now = 0;
+    var star_width = 32
     var user = form.data('user');
     var user_rating = form.data('user_rating');
+
 
     if (user_rating) {
         voted = 1;
@@ -17,9 +19,8 @@ $(document).ready(function() {
         var rating_width;
         var rating;
         $('.rating').on('click', function (e) {
-            console.log('click');
             var data = {};
-            data.click_rating = rating_width/32;
+            data.click_rating = rating_width/star_width;
             var csrf_token = $('#rating_form [name="csrfmiddlewaretoken"]').val();
             data["csrfmiddlewaretoken"] = csrf_token;
             var url = form.attr("action");
@@ -36,25 +37,22 @@ $(document).ready(function() {
                     voted_now = 1;
                     $('#product_avg_rating').text(avg_rating);
                     $('.avg').width(data.px_rating);
-                    console.log(avg_rating)
                 },
 
                 error: function(){
-                    console.log(data.user_rating);
                 }
             });
             });
-        function roundTo32(num) {
-            return Math.round(num/32)*32;
+        function round_to_star_width(num) {
+            return Math.round(num/star_width)*star_width;
         }
 
         $('.rating').mousemove(function(e){
             var rating_active = $('.rating-active');
             var pos = $(this).offset();
             var star_left = pos.left;
-            rating_width = roundTo32(e.pageX - star_left);
+            rating_width = round_to_star_width(e.pageX - star_left);
             if (voted_now){
-
                 $('#your_rating').text("Ви вже голосували оцінка: "+rating);
                 $('.rating-active').addClass('hidden');
             }

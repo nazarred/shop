@@ -5,5 +5,5 @@ from django.shortcuts import redirect
 class NotLoginRequiredMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect('/')
+            return redirect('product_list')
         return super(NotLoginRequiredMixin, self).dispatch(request, *args, **kwargs)
