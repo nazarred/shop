@@ -12,7 +12,7 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True, default=None)
     average_rating = models.FloatField(default=0, null=True, blank=True)
     add_date = models.DateTimeField(auto_now_add=True)
-    main_image = models.ForeignKey('ProductImage', related_name='prod')
+    main_image = models.ForeignKey('ProductImage', related_name='prod', null=True, blank=True)
 
     def get_comments(self):
         return self.productcomment_set.all().select_related('user')

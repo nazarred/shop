@@ -39,8 +39,15 @@ class ProductAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(ProductAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['main_image'].queryset = obj.images.all()
+        if obj and 'main_image' in form.base_fields:
+            form.base_fields['main_image'].queryset = obj.images.all()
         return form
+
+    def get_fields(self, request, obj=None):
+        fields = super(ProductAdmin, self).get_fields(request, obj)
+        if not obj:
+            fields.remove('main_image')
+        return fields
 
 
 admin.site.register(Product, ProductAdmin)
