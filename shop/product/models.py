@@ -64,9 +64,10 @@ class ProductComment(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, blank=True, related_name='images')
-    image = models.ImageField(upload_to='static/products_images/')
+    image = models.ImageField(upload_to='products_images/')
     is_main = models.BooleanField(default=False)
 
     def __str__(self):
         main = '(Головна)' if self.is_main else ''
         return "%s... %s" % (self.product.name[:15], main)
+
