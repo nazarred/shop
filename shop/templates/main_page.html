@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block main_content %}
+    {% if messages %}
+
+            <ul class="messages">
+                {% for message in messages %}
+                    <div align="left"
+                            {% if message.tags == 'error' %}
+                                class="alert alert-danger"
+                            {% else %}
+                                class="alert alert-success"
+                            {% endif %}>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </ul>
+
+    {% endif %}
+    <div>
+    <h4>Сортувати за:</h4>
+      <ul>
+      Ціною:
+      <a href="/?sort=price&reverse=&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=price&reverse=1&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      Рейтингом:
+      <a href="/?sort=average_rating&reverse=&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=average_rating&reverse=1&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      Датою:
+      <a href="/?sort=add_date&reverse=&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=add_date&reverse=1&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      Ім'ям:
+      <a href="/?sort=name&reverse=&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=name&reverse=1&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      </ul>
+    </div>
+<div class="pagination">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% endif %}
+        {% for page in paginator.page_range %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page }}">{{ page }}</a></li>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.next_page_number }}">&raquo;</a></li>
+        {% endif %}
+    </ul>
+</div>
+    {% for product in products %}
+      <div>
+          <div class="col-md-3 col-lg-offset-0">
+            <h4>
+                <a href="{{ product.get_absolute_url }}">
+                    {{ product.name  }}
+                </a>
+            </h4>
+              <img src="{{ product.main_image.image.url }}" width="300" align="center">
+              <p>{{ product.short_description|truncatechars_html:70 }}</p>
+              <h4><b>Ціна: </b>{{ product.price }} грн</h4>
+              <h4><b>Рейтинг: </b>{{ product.average_rating|floatformat:1 }}</h4>
+              <p>
+                  <a class="btn btn-default" href="{{ product.get_absolute_url }}" role="button">Детальніше &raquo;</a>
+              </p>
+          </div>
+        </div>
+
+    {% endfor %}
+
+{% endblock main_content %}

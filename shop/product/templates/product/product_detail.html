@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}{{ product.name }}{% endblock title %}
+
+
+{% block main_content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+
+
+                <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                  <!-- Indicators -->
+                  <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#myCarousel" data-slide-to="1"></li>
+                    <li data-target="#myCarousel" data-slide-to="2"></li>
+                  </ol>
+                  <div class="carousel-inner">
+                        <div class="item active">
+                          <img src="/{{ product.main_image.image.url }}" alt="First slide">
+                        </div>
+                        {% for image in product.get_not_main_images %}
+                         <div class="item">
+                            <img src="/{{ image.image.url }}" alt="First slide">
+                        </div>
+                        {% endfor %}
+                  </div>
+                  </div>
+                  <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                  <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                </div>
+
+            <div class="col-lg-6">
+                <h4 class="text-center">
+                    {{ product.name }}
+                </h4>
+                <div>
+                    <h4>
+                        <b>Ціна</b>{{ product.price }}
+                    </h4>
+                </div>
+                <form id="form_buying_product" action="{% url 'product:product_detail' pk=product.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="number" name="pcs"><span> шт. </span>
+                    <button type="submit" id="submit_btn" class="btn btn-success btn-buy">Купити</button>
+                </form>
+                <div>
+                    {% if messages %}
+                        <div class="alert alert-success" align="left">
+                          <ul class="messages">
+                          {% for message in messages %}
+                              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                          {% endfor %}
+                          </ul>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <b>Рейтинг:</b> <span id="product_avg_rating">{{ product.average_rating|floatformat:1 }}</span>
+                    </div>
+
+                    <div>
+                        <form
+                              class="form-horizontal" role="form"
+                              action="{% url 'product:rating_change' pk=product.id %}"
+                              method="post" id="rating_form"
+                              data-product_id="{{ product.id }}"
+                              data-user="{{ user.username }}"
+                              data-user_rating="{{ user_rating.rating }}"
+                              >
+                            {% csrf_token %}
+                        <div class="rating">
+                            <div class="avg" style="width: {{ product.get_avg_rating_in_px|floatformat:'0' }}px">
+                            </div>
+                            <div class="rating-active hidden"></div>
+                        </div>
+                        <span id="your_rating"></span>
+                        <span id="active_rating"></span>
+                        </form>
+                    </div>
+                </div>
+                <div>
+                      <!-- Nav tabs -->
+                      <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="#description" aria-controls="home" role="tab" data-toggle="tab">
+                                Опис
+                            </a>
+                      </ul>
+                      <!-- Tab panes -->
+                      <div class="tab-content product-description-tabs">
+                        <div role="tabpanel" class="tab-pane active" id="description">
+                            {{ product.description }}
+                        </div>
+                      </div>
+                </div>
+                <div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <div class="comments">
+
+      <h3 class="title-comments">Коментарi</h3>
+
+
+
+        {% for comment in product.get_comments %}
+          <ul class="media">
+            <div class="media-left">
+            </div>
+            <div class="media-body">
+              <div class="media-heading">
+                <div class="author">{{ comment.user.username }}</div>
+                <div class="metadata">
+                  <span class="date">{{ comment.created }}</span>
+                </div>
+              </div>
+              <div class="media-text text-justify">
+                    {{ comment.text }}
+              </div>
+              <hr>
+            </div>
+          </ul>
+        {% endfor %}
+  {% if user.is_authenticated %}
+      <div><b>{{ user.username }}</b></div>
+      <form role="form" action="{% url 'product:comments' pk=product.id %}" method="post">
+          {% csrf_token %}
+            <div>
+              {{ form.text }} <br>
+              <input type="submit" class="btn btn-default" value="Відправити" />
+            </div>
+      </form>
+  {% endif %}
+  </div>
+{% endblock main_content %}
