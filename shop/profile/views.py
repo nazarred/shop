@@ -1,3 +1,4 @@
+import logging
 from django.contrib import auth, messages
 from django.contrib.auth import authenticate
 from django.shortcuts import redirect
@@ -5,6 +6,8 @@ from django.views.generic import CreateView
 
 from .forms import UserRegistrationForm, ProfileForm
 from .mixins import NotLoginRequiredMixin
+
+logger = logging.getLogger(__name__)
 
 
 class RegisterView(NotLoginRequiredMixin, CreateView):
@@ -26,6 +29,8 @@ class RegisterView(NotLoginRequiredMixin, CreateView):
         user = authenticate(username=new_user.username, password=my_password)
         if user is not None:
             auth.login(self.request, user)
+        else:
+            logger.warning('User is None!')
         new_profile = profile_form.save(commit=False)
         new_profile.user = user
         new_profile.save()

@@ -26,19 +26,33 @@
     <h4>Сортувати за:</h4>
       <ul>
       Ціною:
-      <a href="/?sort=price&reverse=" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
-      <a href="/?sort=price&reverse=1" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      <a href="/?sort=price&reverse=&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=price&reverse=1&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
       Рейтингом:
-      <a href="/?sort=average_rating&reverse=" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
-      <a href="/?sort=average_rating&reverse=1" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      <a href="/?sort=average_rating&reverse=&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=average_rating&reverse=1&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
       Датою:
-      <a href="/?sort=add_date&reverse=" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
-      <a href="/?sort=add_date&reverse=1" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      <a href="/?sort=add_date&reverse=&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=add_date&reverse=1&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
       Ім'ям:
-      <a href="/?sort=name&reverse=" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
-      <a href="/?sort=name&reverse=1" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
+      <a href="/?sort=name&reverse=&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-up"></span></a>
+      <a href="/?sort=name&reverse=1&page={{ page_obj.number }}" class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span></a>
       </ul>
     </div>
+<div class="pagination">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% endif %}
+        {% for page in paginator.page_range %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page }}">{{ page }}</a></li>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.next_page_number }}">&raquo;</a></li>
+        {% endif %}
+    </ul>
+</div>
     {% for product in products %}
       <div>
           <div class="col-md-3 col-lg-offset-0">

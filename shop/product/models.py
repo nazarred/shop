@@ -15,7 +15,7 @@ class Product(models.Model):
     main_image = models.ForeignKey('ProductImage', related_name='prod', null=True, blank=True)
 
     def get_comments(self):
-        return self.productcomment_set.all().select_related('user')
+        return self.productcomment_set.all().select_related('user').order_by('created')
 
     def get_nmb_of_rating(self):
         return self.productrating_set.all().count()

@@ -3,24 +3,48 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import ListView, DetailView
 
+
 from .forms import CommentModelForm
 from .models import Product, ProductRating
 
-NMB_OF_PRODUCT = 6
+PRODUCTS_ON_PAGE = 3
 
 
 class ProductsList(ListView):
     model = Product
     template_name = 'main_page.html'
     context_object_name = 'products'
+    paginate_by = PRODUCTS_ON_PAGE
 
     def get_queryset(self):
         qs = super().get_queryset()
         sort = self.request.GET.get('sort', 'name')
-        qs = qs.order_by('%s' % sort)[:NMB_OF_PRODUCT].select_related('main_image')
+        qs = qs.order_by('%s' % sort).select_related('main_image')
         if self.request.GET.get('reverse', None):
             qs = qs.reverse()
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductsList, self).get_context_data(**kwargs)
+        context['sort'] = self.request.GET.get('sort', 'name')
+        context['reverse'] = self.request.GET.get('reverse', '')
+        return context
+
+
+# def product_list(request):
+#     sort = request.GET.get('sort', 'name')
+#     products_list = Product.objects.all().order_by('%s' % sort).select_related('main_image')
+#     if request.GET.get('reverse', ''):
+#         products_list = products_list.reverse()
+#     paginator = Paginator(products_list, 3)
+#     page = request.GET.get('page')
+#     try:
+#         products = paginator.page(page)
+#     except PageNotAnInteger:
+#         products = paginator.page(1)
+#     except EmptyPage:
+#         products = paginator.page(paginator.num_pages)
+#     return render(request, 'main_page.html', locals())
 
 
 class ProductDetailView(DetailView):
@@ -47,27 +71,6 @@ def comments(request, pk):
             comment.product = product
             comment.save()
     return redirect(product.get_absolute_url())
-
-
-# def product_detail(request, pk):
-#     product = Product.objects.get(id=pk)
-#     comments = ProductComment.objects.filter(product=product).select_related('user')
-#     if request.user.is_authenticated():
-#         try:
-#             users_rating = product.productrating_set.get(user=request.user)
-#         except ProductRating.DoesNotExist:
-#             users_rating = None
-#     if request.POST.get('text', None):
-#         comment_form = CommentModelForm(request.POST)
-#         if comment_form.is_valid():
-#             comment = comment_form.save(commit=False)
-#             comment.user = request.user
-#             comment.product = product
-#             comment.save()
-#         return redirect('product:product_detail', pk=product.id)
-#     else:
-#         comment_form = CommentModelForm()
-#     return render(request, 'product/product_detail.html', locals())
 
 
 def rating_change(request, pk):
