@@ -12,5 +12,4 @@ def getting_cart_info(request):
         product_in_cart_pcs = ProductInCart.objects.filter(user=request.user).count()
     else:
         product_in_cart_pcs = ProductInCart.objects.filter(session_key=session_key).count()
-    print(product_in_cart_pcs)
     return locals()

@@ -59,7 +59,13 @@
 			<td>{{ product.product.price }}</td>
 			<td>{{ product.pcs }}</td>
 			<td class="item_price">{{ product.get_total_price }}</td>
-			<td class="add-check"><a class="item_add hvr-skew-backward" href="#">Delete</a></td>
+			<td class="add-check">
+                <form method="post" action="{% url 'product:delete_product_from_cart' pk=product.id%}">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-warning" value="Delete">
+                </form>
+{#                <a class="btn btn-warning" href="{% url 'product:delete_product_from_cart' pk=product.id %}">Delete</a>#}
+            </td>
           </tr>
     {% endfor %}
 

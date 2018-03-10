@@ -1,7 +1,8 @@
 from django.contrib import messages, auth
 from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404
-from django.views.generic import ListView, DetailView
+from django.urls import reverse
+from django.views.generic import ListView, DetailView, DeleteView
 
 
 from .forms import CommentModelForm, ProductInCartForm
@@ -54,8 +55,6 @@ class ProductDetailView(DetailView):
         context = super(ProductDetailView, self).get_context_data(**kwargs)
         context['form'] = CommentModelForm()
         context['cart_form'] = ProductInCartForm()
-
-        print(self.request.session.session_key)
         if self.request.user.is_authenticated():
             try:
                 context['user_rating'] = self.object.productrating_set.get(user=self.request.user)
@@ -105,7 +104,6 @@ class ProductsCartView(ListView):
         else:
             qs = qs.filter(session_key=self.request.session.session_key)
         qs = qs.order_by('add_date').select_related('product__main_image', 'user', )
-        print(qs)
         return qs
 
 
@@ -125,4 +123,7 @@ def add_product_in_cart(request, pk):
     return redirect(product.get_absolute_url())
 
 
+class DeleteProductsFromCartView(DeleteView):
+    model = ProductInCart
+    success_url = '/product/product_in_cart/'
 
