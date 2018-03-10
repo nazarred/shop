@@ -1,18 +1,19 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Avg, Q
+from django.db.models import Avg
 
 WIDTH_OF_RATING_STAR = 32  # ширина однієї зірочки рейтинга (static/images/stars.png)
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=64, blank=True, null=True, default=None)
+    name = models.CharField(max_length=64, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     short_description = models.TextField(blank=True, null=True, default=None)
     description = models.TextField(blank=True, null=True, default=None)
     average_rating = models.FloatField(default=0, null=True, blank=True)
     add_date = models.DateTimeField(auto_now_add=True)
     main_image = models.ForeignKey('ProductImage', related_name='prod', null=True, blank=True)
+    is_active = models.BooleanField(default=True)
 
     def get_comments(self):
         return self.productcomment_set.all().select_related('user').order_by('created')
@@ -39,17 +40,30 @@ class Product(models.Model):
         return "%s" % self.name
 
 
+class ProductInCart(models.Model):
+    product = models.ForeignKey(Product, related_name='product_in_cart')
+    pcs = models.PositiveIntegerField()
+    user = models.ForeignKey(User, related_name='product_in_cart', blank=True, null=True)
+    session_key = models.CharField(max_length=42, blank=True, null=True)
+    add_date = models.DateTimeField(auto_now_add=True)
+
+    def get_total_price(self):
+        return self.product.price*self.pcs
+
+    def save(self, *args, **kwargs):
+        try:
+            product = ProductInCart.objects.get(product=self.product,
+                                                user=self.user, session_key=self.session_key)
+            product.pcs += self.pcs
+            super(ProductInCart, product).save(*args, **kwargs)
+        except ProductInCart.DoesNotExist:
+            super(ProductInCart, self).save(*args, **kwargs)
+
+
 class ProductRating(models.Model):
     product = models.ForeignKey(Product)
     user = models.ForeignKey(User)
-    rating = models.CharField(max_length=6, default='0', choices=(
-        ('0', 0),
-        ('1', 1),
-        ('2', 2),
-        ('3', 3),
-        ('4', 4),
-        ('5', 5),
-    ))
+    rating = models.CharField(max_length=6, default='0')
 
     class Meta:
         unique_together = ('product', 'user')

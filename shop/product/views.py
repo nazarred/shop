@@ -4,8 +4,8 @@ from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import ListView, DetailView
 
 
-from .forms import CommentModelForm
-from .models import Product, ProductRating
+from .forms import CommentModelForm, ProductInCartForm
+from .models import Product, ProductRating, ProductInCart
 
 PRODUCTS_ON_PAGE = 3
 
@@ -53,6 +53,9 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProductDetailView, self).get_context_data(**kwargs)
         context['form'] = CommentModelForm()
+        context['cart_form'] = ProductInCartForm()
+
+        print(self.request.session.session_key)
         if self.request.user.is_authenticated():
             try:
                 context['user_rating'] = self.object.productrating_set.get(user=self.request.user)
@@ -87,5 +90,39 @@ def rating_change(request, pk):
         messages.error(request, 'Ви вже голосували')
 
     return JsonResponse(return_dict)
+
+
+class ProductsCartView(ListView):
+    model = ProductInCart
+    template_name = 'product/product_cart.html'
+    context_object_name = 'products'
+    paginate_by = 4
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_authenticated:
+            qs = qs.filter(user=self.request.user)
+        else:
+            qs = qs.filter(session_key=self.request.session.session_key)
+        qs = qs.order_by('add_date').select_related('product__main_image', 'user', )
+        print(qs)
+        return qs
+
+
+def add_product_in_cart(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        cart_form = ProductInCartForm(request.POST)
+        if cart_form.is_valid():
+            cart = cart_form.save(commit=False)
+            cart.product = product
+            if request.user.is_authenticated:
+                cart.user = request.user
+            else:
+                cart.session_key = request.session.session_key
+            cart.save()
+            messages.success(request, 'Продукт успішно добавлений')
+    return redirect(product.get_absolute_url())
+
 
 

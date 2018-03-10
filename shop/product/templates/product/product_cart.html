@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}Корзина{% endblock title %}
+
+
+{% block main_content %}
+    {% if messages %}
+
+            <ul class="messages">
+                {% for message in messages %}
+                    <div align="left"
+                            {% if message.tags == 'error' %}
+                                class="alert alert-danger"
+                            {% else %}
+                                class="alert alert-success"
+                            {% endif %}>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </ul>
+
+    {% endif %}
+
+<div class="pagination">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% endif %}
+        {% for page in paginator.page_range %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page }}">{{ page }}</a></li>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.next_page_number }}">&raquo;</a></li>
+        {% endif %}
+    </ul>
+</div>
+    <div class="table-responsive">
+    	    <table class="table-heading simpleCart_shelfItem">
+		  <tr>
+			<th class="table-grid">Продукт</th>
+			<th>Ціна</th>
+			<th>Кількість </th>
+			<th>Всього</th>
+		  </tr>
+      {% for product in products %}
+		  <tr class="cart-header">
+
+			<td class="ring-in"><a href="{{ product.product.get_absolute_url }}" class="at-in"><img src="{{ product.product.main_image.image.url }}" class="img-responsive" alt=""></a>
+			<div class="sed">
+				<h5><a href="{{ product.product.get_absolute_url }}">{{ product.product.name }}</a></h5>
+				<p>{{ product.product.short_description }}</p>
+
+			</div>
+			<div class="clearfix"> </div>
+			<div class="close1"> </div></td>
+			<td>{{ product.product.price }}</td>
+			<td>{{ product.pcs }}</td>
+			<td class="item_price">{{ product.get_total_price }}</td>
+			<td class="add-check"><a class="item_add hvr-skew-backward" href="#">Delete</a></td>
+          </tr>
+    {% endfor %}
+
+
+	</table>
+	</div>
+{% endblock main_content %}

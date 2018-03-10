@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import Textarea
-from .models import ProductRating, ProductComment
+from .models import ProductRating, ProductComment, ProductInCart
 
 
 class RatingModelForm(forms.ModelForm):
@@ -17,3 +17,10 @@ class CommentModelForm(forms.ModelForm):
         widgets = {
             'text': Textarea(attrs={'placeholder': 'Ваш коментар...'}),
         }
+
+
+class ProductInCartForm(forms.ModelForm):
+
+    class Meta:
+        model = ProductInCart
+        exclude = ["product", 'user', 'session_key']

@@ -18,6 +18,7 @@
     <link href="{% static 'bootstrap/css/starter-templ.css' %}" rel="stylesheet">
 
     <link href="{% static 'css/rating_style.css' %}" rel="stylesheet">
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
 
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -41,8 +42,12 @@
           <a class="navbar-brand" href="/">SHOP</a>
         </div>
         <div class="navbar-collapse collapse">
+            <div class="navbar-form navbar-right">
+                <a href="{% url 'product:product_in_cart' %}" class="btn btn-info"><span class="glyphicon glyphicon-shopping-cart"></span> Корзина ({{ product_in_cart_pcs }})</a>
+            </div>
+
           {% if user.is_authenticated %}
-               <p class="navbar-text navbar-right">Ви авторизовані як <b>{{ user.username }}</b><a href="{% url 'logout' %}" class="btn btn-success">Вихід</a></p>
+               <p class="navbar-text navbar-right" >Ви авторизовані як <b>{{ user.username }}</b><a href="{% url 'logout' %}" class="btn btn-success">Вихід</a></p>
           {% else %}
               <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'login' %}">
                 {% csrf_token %}
@@ -56,6 +61,7 @@
                 <a href="{% url 'profile:registration' %}" class="btn btn-success">Registration</a>
               </form>
           {% endif %}
+
         </div><!--/.navbar-collapse -->
       </div>
     </div>
