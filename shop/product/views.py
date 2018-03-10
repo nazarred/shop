@@ -19,7 +19,7 @@ class ProductsList(ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         sort = self.request.GET.get('sort', 'name')
-        qs = qs.order_by('%s' % sort).select_related('main_image')
+        qs = qs.filter(is_active=True).order_by('%s' % sort).select_related('main_image')
         if self.request.GET.get('reverse', None):
             qs = qs.reverse()
         return qs
