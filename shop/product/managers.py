@@ -1,4 +1,5 @@
 from django.db import models
+from .utils import get_session_instance
 
 
 class ActiveProductManager(models.Manager):
@@ -15,5 +16,6 @@ class CartQuerySet(models.QuerySet):
         if request.user.is_authenticated:
             qs = self.filter(user=request.user)
         else:
-            qs = self.filter(session_key=request.session.session_key)
+            session = get_session_instance(request)
+            qs = self.filter(session=session)
         return qs

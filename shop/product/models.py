@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Avg
+from django.contrib.sessions.models import Session
 
 from .managers import ActiveProductManager, CartManager, CartQuerySet
 
@@ -47,8 +48,8 @@ class Product(models.Model):
 class ProductInCart(models.Model):
     product = models.ForeignKey(Product, related_name='product_in_cart')
     pcs = models.PositiveIntegerField()
-    user = models.ForeignKey(User, related_name='product_in_cart', blank=True, null=True)
-    session_key = models.CharField(max_length=42, blank=True, null=True)
+    user = models.ForeignKey(User, related_name='product_in_cart', blank=True, null=True, on_delete=models.CASCADE)
+    session = models.ForeignKey(Session, blank=True, null=True, on_delete=models.CASCADE)
     add_date = models.DateTimeField(auto_now_add=True)
     objects = CartManager.from_queryset(CartQuerySet)()
 
@@ -58,7 +59,7 @@ class ProductInCart(models.Model):
     def save(self, *args, **kwargs):
         try:
             product = ProductInCart.objects.get(product=self.product,
-                                                user=self.user, session_key=self.session_key)
+                                                user=self.user, session=self.session)
             product.pcs += self.pcs
             super(ProductInCart, product).save(*args, **kwargs)
         except ProductInCart.DoesNotExist:

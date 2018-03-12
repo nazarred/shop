@@ -4,9 +4,9 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, DeleteView, TemplateView
 
-
 from .forms import CommentModelForm, ProductInCartForm
 from .models import Product, ProductRating, ProductInCart
+from .utils import get_session_instance
 
 PRODUCTS_ON_PAGE = 3
 
@@ -22,6 +22,7 @@ class ProductsList(ListView):
         qs = super().get_queryset()
         sort = self.request.GET.get('sort', 'name')
         qs = qs.order_by('%s' % sort)
+        print(self.request.session.model)
         if self.request.GET.get('reverse', None):
             qs = qs.reverse()
         return qs
@@ -111,6 +112,7 @@ class ProductsCartView(TemplateView):
 
 def add_product_in_cart(request, pk):
     product = get_object_or_404(Product, pk=pk)
+
     if request.method == 'POST':
         cart_form = ProductInCartForm(request.POST)
         if cart_form.is_valid():
@@ -119,7 +121,8 @@ def add_product_in_cart(request, pk):
             if request.user.is_authenticated:
                 cart.user = request.user
             else:
-                cart.session_key = request.session.session_key
+                session = get_session_instance(request)  # можливо є і інший спосіб, але я його ще не знайшов
+                cart.session = session
             cart.save()
             messages.success(request, 'Продукт успішно добавлений')
     return redirect(product.get_absolute_url())
