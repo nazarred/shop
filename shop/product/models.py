@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Avg
 
+from .managers import ActiveProductManager, CartManager, CartQuerySet
+
 WIDTH_OF_RATING_STAR = 32  # ширина однієї зірочки рейтинга (static/images/stars.png)
 
 
@@ -14,6 +16,8 @@ class Product(models.Model):
     add_date = models.DateTimeField(auto_now_add=True)
     main_image = models.ForeignKey('ProductImage', related_name='prod', null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    objects = models.Manager()
+    active_product = ActiveProductManager()
 
     def get_comments(self):
         return self.productcomment_set.all().select_related('user').order_by('created')
@@ -46,6 +50,7 @@ class ProductInCart(models.Model):
     user = models.ForeignKey(User, related_name='product_in_cart', blank=True, null=True)
     session_key = models.CharField(max_length=42, blank=True, null=True)
     add_date = models.DateTimeField(auto_now_add=True)
+    objects = CartManager.from_queryset(CartQuerySet)()
 
     def get_total_price(self):
         return self.product.price*self.pcs
@@ -84,4 +89,3 @@ class ProductImage(models.Model):
     def __str__(self):
         main = '(Головна)' if self.is_main else ''
         return "%s... %s" % (self.product.name[:15], main)
-

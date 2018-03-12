@@ -1,4 +1,3 @@
-
 from .models import ProductInCart
 
 
@@ -8,8 +7,6 @@ def getting_cart_info(request):
     if not session_key:
         request.session["session_key"] = 123
         request.session.cycle_key()
-    if request.user.is_authenticated:
-        product_in_cart_pcs = ProductInCart.objects.filter(user=request.user).count()
-    else:
-        product_in_cart_pcs = ProductInCart.objects.filter(session_key=session_key).count()
+    products_in_cart = ProductInCart.objects.user_cart(request).select_related('product__main_image', 'user')
+    product_in_cart_pcs = ProductInCart.objects.user_cart(request).count()
     return locals()

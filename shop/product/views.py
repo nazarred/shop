@@ -2,7 +2,7 @@ from django.contrib import messages, auth
 from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
-from django.views.generic import ListView, DetailView, DeleteView
+from django.views.generic import ListView, DetailView, DeleteView, TemplateView
 
 
 from .forms import CommentModelForm, ProductInCartForm
@@ -16,11 +16,12 @@ class ProductsList(ListView):
     template_name = 'main_page.html'
     context_object_name = 'products'
     paginate_by = PRODUCTS_ON_PAGE
+    queryset = model.active_product.all().select_related('main_image')
 
     def get_queryset(self):
         qs = super().get_queryset()
         sort = self.request.GET.get('sort', 'name')
-        qs = qs.filter(is_active=True).order_by('%s' % sort).select_related('main_image')
+        qs = qs.order_by('%s' % sort)
         if self.request.GET.get('reverse', None):
             qs = qs.reverse()
         return qs
@@ -91,20 +92,21 @@ def rating_change(request, pk):
     return JsonResponse(return_dict)
 
 
-class ProductsCartView(ListView):
-    model = ProductInCart
+class ProductsCartView(TemplateView):
     template_name = 'product/product_cart.html'
-    context_object_name = 'products'
-    paginate_by = 4
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        if self.request.user.is_authenticated:
-            qs = qs.filter(user=self.request.user)
-        else:
-            qs = qs.filter(session_key=self.request.session.session_key)
-        qs = qs.order_by('add_date').select_related('product__main_image', 'user', )
-        return qs
+
+# class ProductsCartView(ListView):
+#     model = ProductInCart
+#     template_name = 'product/product_cart.html'
+#     context_object_name = 'products'
+#     paginate_by = 4
+#
+#     def get_queryset(self):
+#         qs = super().get_queryset()
+#         qs = qs.user_cart(self.request)
+#         qs = qs.order_by('add_date').select_related('product__main_image', 'user')
+#         return qs
 
 
 def add_product_in_cart(request, pk):
