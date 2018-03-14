@@ -90,3 +90,5 @@ class ProductImage(models.Model):
     def __str__(self):
         main = '(Головна)' if self.is_main else ''
         return "%s... %s" % (self.product.name[:15], main)
+
+from .signals import save_product

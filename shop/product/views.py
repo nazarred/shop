@@ -83,7 +83,6 @@ def rating_change(request, pk):
     try:
         rating = ProductRating.objects.create(user=auth.get_user(request),
                                               rating=request.POST['click_rating'], product=product)
-        product.save()
         return_dict['avg_rating'] = product.average_rating
         return_dict['r_rating'] = rating.rating
         return_dict['px_rating'] = product.get_avg_rating_in_px()
