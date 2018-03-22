@@ -23,19 +23,23 @@ class RegisterView(NotLoginRequiredMixin, CreateView):
     def form_valid(self, form):
         profile_form = ProfileForm(self.request.POST)
         new_user = form.save(commit=False)
-        new_user.set_password(form.cleaned_data['password'])
-        new_user.save()
-        my_password = form.cleaned_data['password']
-        user = authenticate(username=new_user.username, password=my_password)
-        if user is not None:
-            auth.login(self.request, user)
+        if profile_form.is_valid():
+            new_user.set_password(form.cleaned_data['password'])
+            new_user.save()
+            my_password = form.cleaned_data['password']
+            user = authenticate(username=new_user.username, password=my_password)
+            if user is not None:
+                auth.login(self.request, user)
+            else:
+                logger.warning('User is None!')
+            new_profile = profile_form.save(commit=False)
+            new_profile.user = user
+            new_profile.save()
+            messages.success(self.request, 'Ви успішно зареєстровані та авторизовані')
+            return super(RegisterView, self).form_valid(form)
         else:
-            logger.warning('User is None!')
-        new_profile = profile_form.save(commit=False)
-        new_profile.user = user
-        new_profile.save()
-        messages.success(self.request, 'Ви успішно зареєстровані та авторизовані')
-        return super().form_valid(form)
+            messages.warning(self.request, 'Введіть коректно "Номер телефону" і "Дата народження"')
+            return super(RegisterView, self).form_invalid(form)
 
 
 def logout(request):

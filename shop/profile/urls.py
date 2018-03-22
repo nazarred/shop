@@ -3,5 +3,5 @@ from profile import views
 
 urlpatterns = [
 
-    url(r'^registration$', views.RegisterView.as_view(), name='registration'),
+    url(r'^registration/$', views.RegisterView.as_view(), name='registration'),
 ]

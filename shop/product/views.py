@@ -67,7 +67,7 @@ class ProductDetailView(DetailView):
 
 def comments(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated:
         comment_form = CommentModelForm(request.POST)
         if comment_form.is_valid():
             comment = comment_form.save(commit=False)
