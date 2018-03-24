@@ -2,7 +2,7 @@ import logging
 from django.contrib import messages, auth
 from django.http import JsonResponse, Http404
 from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, DeleteView, TemplateView
 
 from .forms import CommentModelForm, ProductInCartForm
@@ -135,5 +135,5 @@ def add_product_in_cart(request, pk):
 
 class DeleteProductsFromCartView(DeleteView):
     model = ProductInCart
-    success_url = '/product/product_in_cart/'
+    success_url = reverse_lazy('product:product_in_cart')
 

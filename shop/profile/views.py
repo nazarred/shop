@@ -3,13 +3,13 @@ from django.contrib import auth, messages
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.shortcuts import redirect, reverse
-from django.views.generic import CreateView, UpdateView, TemplateView, FormView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView, DetailView
 
 from .models import Profile
 from .forms import UserRegistrationForm, ProfileForm
-from .mixins import NotLoginRequiredMixin
+from .mixins import NotLoginRequiredMixin, UserValidMixin
 
 logger = logging.getLogger(__name__)
 
@@ -67,15 +67,22 @@ def login(request):
     return redirect(redirect_page)
 
 
-class ProfileDetailView(LoginRequiredMixin, TemplateView):
+class ProfileDetailView(LoginRequiredMixin, UserValidMixin, DetailView):
     template_name = 'profile/profile_detail.html'
 
+    def get_object(self, queryset=None):
+        return self.request.user
 
-class ProfileUpdateView(LoginRequiredMixin, UpdateView):
-    model = User
+
+class ProfileUpdateView(LoginRequiredMixin, UserValidMixin, UpdateView):
     fields = ['username', 'first_name', 'last_name', 'email']
     template_name = 'profile/update_form.html'
-    success_url = '/profile/detail/'
+
+    def get_success_url(self):
+        return reverse('profile:detail', kwargs={'pk': self.kwargs['pk']})
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
     def get_context_data(self, **kwargs):
         context = super(ProfileUpdateView, self).get_context_data()
@@ -103,10 +110,10 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
             return super(ProfileUpdateView, self).form_invalid(form)
 
 
-class PasswordUpdateView(LoginRequiredMixin, UpdateView):
+class PasswordUpdateView(LoginRequiredMixin, UserValidMixin, UpdateView):
     form_class = PasswordChangeForm
     template_name = 'profile/password_update_form.html'
-    success_url = '/'
+    success_url = reverse_lazy('product_list')
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -117,6 +124,6 @@ class PasswordUpdateView(LoginRequiredMixin, UpdateView):
         return kwargs
 
     def form_valid(self, form):
-        messages.warning(self.request, 'Password updated, sign in')
+        messages.success(self.request, 'Password updated, sign in')
         return super(PasswordUpdateView, self).form_valid(form)
 

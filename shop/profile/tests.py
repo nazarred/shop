@@ -69,6 +69,7 @@ class UsersTest(TestCase):
 
     def test_update_user_without_profile(self):
         self.client.login(username='john', password='glassonion')
+        profile_url = '/profile/detail/%d/' % self.user.id
         response = self.client.post('/profile/update/%d/' % self.user.id, {
             'username': self.user.username,
             'email': self.user.email,
@@ -77,19 +78,20 @@ class UsersTest(TestCase):
             'date_of_birth': datetime.date.today()
         })
         # import pdb; pdb.set_trace()
-        self.assertRedirects(response, '/profile/detail/')
+        self.assertRedirects(response, profile_url)
         self.assertEqual(Profile.objects.all().count(), 1)
-        response = self.client.get('/profile/detail/')
+        response = self.client.get(profile_url)
         self.assertContains(response, 'name-test')
 
     def test_update_user_with_profile(self):
         self.client.login(username='john', password='glassonion')
+        profile_url = '/profile/detail/%d/' % self.user.id
         profile = Profile.objects.create(
             user=self.user,
             phone_nmb='125258',
             date_of_birth=datetime.date.today()
         )
-        response = self.client.get('/profile/detail/')
+        response = self.client.get(profile_url)
         self.assertContains(response, '125258')
         response = self.client.post('/profile/update/%d/' % self.user.id, {
             'username': self.user.username,
@@ -98,9 +100,9 @@ class UsersTest(TestCase):
             'phone_nmb': '066-345-3285',
             'date_of_birth': datetime.date.today()
         })
-        self.assertRedirects(response, '/profile/detail/')
+        self.assertRedirects(response, profile_url)
         self.assertEqual(Profile.objects.all().count(), 1)
-        response = self.client.get('/profile/detail/')
+        response = self.client.get(profile_url)
         self.assertContains(response, 'name-test')
         self.assertContains(response, '066-345-3285')
 

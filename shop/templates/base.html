@@ -48,7 +48,7 @@
 
           {% if user.is_authenticated %}
                <p class="navbar-text navbar-right" >
-                   Ви авторизовані як <b><a href="{% url 'profile:detail' %}">{{ user.username }}</a></b>
+                   Ви авторизовані як <b><a href="{% url 'profile:detail' pk=user.id %}">{{ user.username }}</a></b>
                    <a href="{% url 'logout' %}" class="btn btn-success">Вихід</a>
                </p>
           {% else %}
