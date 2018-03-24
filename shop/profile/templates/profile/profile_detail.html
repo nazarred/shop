@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}{{ user }}{% endblock title %}
+
+
+{% block main_content %}
+    {% if messages %}
+
+            <ul class="messages">
+                {% for message in messages %}
+                    <div align="left"
+                            {% if message.tags == 'error' %}
+                                class="alert alert-danger"
+                            {% else %}
+                                class="alert alert-success"
+                            {% endif %}>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </ul>
+
+    {% endif %}
+    <h2>{{ user.username }}</h2>
+    <div>
+        <table class="table table-striped">
+              <tbody>
+                <tr>
+                  <td>Username</td>
+                  <td>{{ user.username }}</td>
+                </tr>
+                <tr>
+                  <td>First name</td>
+                  <td>{{ user.first_name }}</td>
+                </tr>
+                <tr>
+                  <td>Last name</td>
+                  <td>{{ user.last_name }}</td>
+                </tr>
+                <tr>
+                  <td>Email</td>
+                  <td>{{ user.email }}</td>
+                </tr>
+                </tr>
+                <tr>
+                  <td>Phone</td>
+                  <td>{{ user.profile.phone_nmb }}</td>
+                </tr>
+                <tr>
+                  <td>Date of birth</td>
+                  <td>{{ user.profile.date_of_birth }}</td>
+                </tr>
+              </tbody>
+        </table>
+    </div>
+    <a href="{% url 'profile:update' pk=user.id %}" class="btn btn-success">Update profile</a>
+    <a href="{% url 'profile:update-password' pk=user.id %}" class="btn btn-success">Change password</a>
+
+
+{% endblock main_content %}

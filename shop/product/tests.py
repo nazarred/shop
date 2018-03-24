@@ -100,3 +100,4 @@ class ProductInCartTest(TestCase):
         self.assertEqual(ProductInCart.objects.all().count(), 1)
         response = self.client.get('/product/product_in_cart/')
         self.assertContains(response, product.name)
+

@@ -1,9 +1,13 @@
 import logging
 from django.contrib import auth, messages
 from django.contrib.auth import authenticate
-from django.shortcuts import redirect
-from django.views.generic import CreateView
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from django.shortcuts import redirect, reverse
+from django.views.generic import CreateView, UpdateView, TemplateView, FormView
 
+from .models import Profile
 from .forms import UserRegistrationForm, ProfileForm
 from .mixins import NotLoginRequiredMixin
 
@@ -62,30 +66,57 @@ def login(request):
             messages.error(request, 'Невірний логін або пароль')
     return redirect(redirect_page)
 
-# def register(request):
-#     if request.user.is_authenticated():
-#         messages.error(request, 'Ви вже зареєстровані')
-#         return redirect('product_list')
-#     if request.method == 'POST':
-#         form = UserRegistrationForm(request.POST)
-#         # form = UserCreationForm(request.POST)
-#         profile_form = ProfileForm(request.POST)
-#         if form.is_valid() and profile_form.is_valid():
-#             new_user = form.save(commit=False)
-#             new_user.set_password(form.cleaned_data['password'])
-#             new_user.save()
-#             # new_user.groups = ['1']  # присвоюється група "Покупці"
-#             my_password = form.cleaned_data['password']
-#             user = authenticate(username=new_user.username, password=my_password)
-#             if user is not None:
-#                 auth.login(request, user)
-#             new_profile = profile_form.save(commit=False)
-#             new_profile.user = user
-#             new_profile.save()
-#             messages.success(request, 'Ви успішно зареєстровані та авторизовані')
-#             return redirect('product_list')
-#     else:
-#         form = UserRegistrationForm()
-#         # form = UserCreationForm(request.POST)
-#         profile_form = ProfileForm()
-#     return render(request, 'profile/register.html', locals())
+
+class ProfileDetailView(LoginRequiredMixin, TemplateView):
+    template_name = 'profile/profile_detail.html'
+
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    fields = ['username', 'first_name', 'last_name', 'email']
+    template_name = 'profile/update_form.html'
+    success_url = '/profile/detail/'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileUpdateView, self).get_context_data()
+        try:
+            context['profile'] = self.object.profile
+        except:
+            context['profile']= None
+        context['profile_form'] = ProfileForm(instance=context['profile'])
+        return context
+
+    def form_valid(self, form):
+        profile = self.get_context_data()['profile']
+        profile_form = ProfileForm(self.request.POST, instance=profile)
+        if profile_form.is_valid():
+            if profile:
+                update_profile = profile_form.save()
+            else:
+                new_profile = profile_form.save(commit=False)
+                new_profile.user = self.object
+                new_profile.save()
+            messages.success(self.request, 'Updated')
+            return super(ProfileUpdateView, self).form_valid(form)
+        else:
+            messages.warning(self.request, 'Введіть коректно "Номер телефону" і "Дата народження"')
+            return super(ProfileUpdateView, self).form_invalid(form)
+
+
+class PasswordUpdateView(LoginRequiredMixin, UpdateView):
+    form_class = PasswordChangeForm
+    template_name = 'profile/password_update_form.html'
+    success_url = '/'
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_form_kwargs(self):
+        kwargs = super(PasswordUpdateView, self).get_form_kwargs()
+        kwargs['user'] = kwargs.pop('instance')
+        return kwargs
+
+    def form_valid(self, form):
+        messages.warning(self.request, 'Password updated, sign in')
+        return super(PasswordUpdateView, self).form_valid(form)
+

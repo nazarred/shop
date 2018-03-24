@@ -47,7 +47,10 @@
             </div>
 
           {% if user.is_authenticated %}
-               <p class="navbar-text navbar-right" >Ви авторизовані як <b>{{ user.username }}</b><a href="{% url 'logout' %}?page={{ request.path }}" class="btn btn-success">Вихід</a></p>
+               <p class="navbar-text navbar-right" >
+                   Ви авторизовані як <b><a href="{% url 'profile:detail' %}">{{ user.username }}</a></b>
+                   <a href="{% url 'logout' %}" class="btn btn-success">Вихід</a>
+               </p>
           {% else %}
               <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'login' %}?page={{ request.path }}">
                 {% csrf_token %}

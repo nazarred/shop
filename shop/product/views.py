@@ -1,5 +1,6 @@
+import logging
 from django.contrib import messages, auth
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, DeleteView, TemplateView
@@ -7,6 +8,8 @@ from django.views.generic import ListView, DetailView, DeleteView, TemplateView
 from .forms import CommentModelForm, ProductInCartForm
 from .models import Product, ProductRating, ProductInCart
 from .utils import get_session_instance
+
+logger = logging.getLogger(__name__)
 
 PRODUCTS_ON_PAGE = 3
 
@@ -121,6 +124,9 @@ def add_product_in_cart(request, pk):
                 cart.user = request.user
             else:
                 session = get_session_instance(request)  # можливо є і інший спосіб, але я його ще не знайшов
+                if not session:
+                    logger.warning('session is not created')
+                    raise Http404
                 cart.session = session
             cart.save()
             messages.success(request, 'Продукт успішно добавлений')

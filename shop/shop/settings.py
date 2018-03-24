@@ -135,6 +135,8 @@ MEDIA_URL = '/media/'
 
 INTERNAL_IPS = '127.0.0.1'
 
+LOGIN_URL = '/'
+
 
 LOGGING = {
     'version': 1,
@@ -151,10 +153,21 @@ LOGGING = {
             'filename': os.path.join(BASE_DIR, "profile_debug.log"),
             'formatter': 'verbose'
         },
+        'file1': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, "product_debug.log"),
+            'formatter': 'verbose'
+        },
     },
     'loggers': {
         'profile': {
             'handlers': ['file'],
+            'level': 'WARNING',
+
+        },
+        'product': {
+            'handlers': ['file1'],
             'level': 'WARNING',
 
         },
