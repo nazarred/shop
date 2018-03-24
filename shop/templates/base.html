@@ -47,9 +47,9 @@
             </div>
 
           {% if user.is_authenticated %}
-               <p class="navbar-text navbar-right" >Ви авторизовані як <b>{{ user.username }}</b><a href="{% url 'logout' %}" class="btn btn-success">Вихід</a></p>
+               <p class="navbar-text navbar-right" >Ви авторизовані як <b>{{ user.username }}</b><a href="{% url 'logout' %}?page={{ request.path }}" class="btn btn-success">Вихід</a></p>
           {% else %}
-              <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'login' %}">
+              <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'login' %}?page={{ request.path }}">
                 {% csrf_token %}
                 <div class="form-group">
                   <input type="text" placeholder="Login" class="form-control" name="login" required>

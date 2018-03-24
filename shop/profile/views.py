@@ -43,23 +43,24 @@ class RegisterView(NotLoginRequiredMixin, CreateView):
 
 
 def logout(request):
+    redirect_page = request.GET.get('page', '/')
     auth.logout(request)
-    return redirect('/')
+    return redirect(redirect_page)
 
 
 def login(request):
+    redirect_page = request.GET.get('page', '/')
     username = request.POST.get('login', '')
     password = request.POST.get('password', '')
-    print(request.POST)
     if request.method == 'POST' and username and password:
         user = auth.authenticate(username=username, password=password)
         if user is not None:
             auth.login(request, user)
             messages.success(request, 'Ви успішно авторизовані')
-            return redirect('/')
+            return redirect(redirect_page)
         else:
             messages.error(request, 'Невірний логін або пароль')
-    return redirect('/')
+    return redirect(redirect_page)
 
 # def register(request):
 #     if request.user.is_authenticated():

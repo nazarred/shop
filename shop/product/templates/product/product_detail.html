@@ -6,6 +6,7 @@
 
 
 {% block main_content %}
+    {% load thumbnail %}
 
     <div class="container">
         <div class="row">
@@ -21,11 +22,15 @@
                   </ol>
                   <div class="carousel-inner">
                         <div class="item active">
-                          <img src="{{ product.main_image.image.url }}" alt="First slide">
+                          {% thumbnail product.main_image.image "555x333" crop="center" as im %}
+                            <img src="{{ im.url }}" alt="First slide">
+                          {% endthumbnail %}
                         </div>
                         {% for image in product.get_not_main_images %}
                          <div class="item">
-                            <img src="{{ image.image.url }}" alt="First slide">
+                          {% thumbnail image.image "555x333" crop="center" as im %}
+                            <img src="{{ im.url }}" alt="First slide">
+                          {% endthumbnail %}
                         </div>
                         {% endfor %}
                   </div>

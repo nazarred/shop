@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'product',
     'profile',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
