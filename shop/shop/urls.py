@@ -29,6 +29,8 @@ urlpatterns = [
     url(r'^logout/', profile.views.logout, name='logout'),
     url(r'^login/', profile.views.login, name='login'),
     url(r'^profile/', include('profile.urls', namespace='profile')),
+    url(r'^order/', include('order.urls', namespace='order')),
+
 ]
 
 if settings.DEBUG:

@@ -2,7 +2,7 @@
 
 
 
-{% block title %}Корзина{% endblock title %}
+{% block title %}My order{% endblock title %}
 
 
 {% block main_content %}
@@ -22,32 +22,15 @@
             </ul>
 
     {% endif %}
-    {% if products_in_cart %}
-        <a href="{% url 'order:confirm' %}" class="btn btn-info">Замовити</a>
-
-<div class="pagination">
-    <ul class="pagination">
-        {% if page_obj.has_previous %}
-            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.previous_page_number }}">&laquo;</a></li>
-        {% endif %}
-        {% for page in paginator.page_range %}
-            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page }}">{{ page }}</a></li>
-        {% endfor %}
-
-        {% if page_obj.has_next %}
-            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.next_page_number }}">&raquo;</a></li>
-        {% endif %}
-    </ul>
-</div>
-    <div class="table-responsive">
-    	    <table class="table-heading simpleCart_shelfItem">
+<table class="table-heading simpleCart_shelfItem">
+    <h4>заказ <b>№ {{ object.id }}</b> від <b>{{ object.add_date }}</b></h4>
 		  <tr>
 			<th class="table-grid">Продукт</th>
 			<th>Ціна</th>
 			<th>Кількість </th>
 			<th>Всього</th>
 		  </tr>
-      {% for product in products_in_cart %}
+      {% for product in object.products.all %}
 		  <tr class="cart-header">
 
 			<td class="ring-in"><a href="{{ product.product.get_absolute_url }}" class="at-in"><img src="{{ product.product.main_image.image.url }}" class="img-responsive" alt=""></a>
@@ -69,18 +52,6 @@
                     </div>
                 </td>
             {% endif %}
-			<td class="add-check">
-                <form method="post" action="{% url 'product:delete_product_from_cart' pk=product.id%}">
-                    {% csrf_token %}
-                    <input type="submit" class="btn btn-warning" value="Delete">
-                </form>
-{#                <a class="btn btn-warning" href="{% url 'product:delete_product_from_cart' pk=product.id %}">Delete</a>#}
-            </td>
           </tr>
     {% endfor %}
-{% else %}
-        <h3>Немає товарів в корзині</h3>
-{% endif %}
-	</table>
-	</div>
 {% endblock main_content %}

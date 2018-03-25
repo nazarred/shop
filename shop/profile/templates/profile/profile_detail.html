@@ -22,7 +22,10 @@
             </ul>
 
     {% endif %}
-    <h2>{{ user.username }}</h2>
+    <h2>
+        {{ user.username }}
+        <a href="{% url 'order:user_orders' pk=user.id %}" class="btn btn-success">My order</a>
+    </h2>
     <div>
         <table class="table table-striped">
               <tbody>

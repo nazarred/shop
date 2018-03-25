@@ -52,18 +52,23 @@ class ProductInCart(models.Model):
     session = models.ForeignKey(Session, blank=True, null=True, on_delete=models.CASCADE)
     add_date = models.DateTimeField(auto_now_add=True)
     objects = CartManager.from_queryset(CartQuerySet)()
+    in_order = models.BooleanField(default=False)
 
-    def get_total_price(self):
+    @property
+    def get_total_product_price(self):
         return self.product.price*self.pcs
 
     def save(self, *args, **kwargs):
         try:
             product = ProductInCart.objects.get(product=self.product,
-                                                user=self.user, session=self.session)
+                                                user=self.user, session=self.session, in_order=False)
             product.pcs += self.pcs
             super(ProductInCart, product).save(*args, **kwargs)
         except ProductInCart.DoesNotExist:
             super(ProductInCart, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return "%s" % self.product
 
 
 class ProductRating(models.Model):

@@ -2,7 +2,7 @@
 
 
 
-{% block title %}Корзина{% endblock title %}
+{% block title %}Confirm order{% endblock title %}
 
 
 {% block main_content %}
@@ -22,8 +22,16 @@
             </ul>
 
     {% endif %}
-    {% if products_in_cart %}
-        <a href="{% url 'order:confirm' %}" class="btn btn-info">Замовити</a>
+
+    <div>
+        <form role="form" method="post">
+          {% csrf_token %}
+            <div>
+              {{ form.as_p }}
+              <input type="submit" class="btn btn-default" value="Confirm" />
+            </div>
+        </form>
+    </div>
 
 <div class="pagination">
     <ul class="pagination">
@@ -48,6 +56,8 @@
 			<th>Всього</th>
 		  </tr>
       {% for product in products_in_cart %}
+                            {% if product.product.is_active %}
+
 		  <tr class="cart-header">
 
 			<td class="ring-in"><a href="{{ product.product.get_absolute_url }}" class="at-in"><img src="{{ product.product.main_image.image.url }}" class="img-responsive" alt=""></a>
@@ -58,29 +68,21 @@
 			</div>
 			<div class="clearfix"> </div>
 			<div class="close1"> </div></td>
-            {% if product.product.is_active %}
                 <td>{{ product.product.price }}</td>
                 <td>{{ product.pcs }}</td>
                 <td class="item_price">{{ product.get_total_product_price }}</td>
-            {% else %}
-                <td colspan="3">
-                    <div class="alert alert-danger">
-                        Товар більше не доступний
-                    </div>
-                </td>
-            {% endif %}
 			<td class="add-check">
                 <form method="post" action="{% url 'product:delete_product_from_cart' pk=product.id%}">
                     {% csrf_token %}
                     <input type="submit" class="btn btn-warning" value="Delete">
                 </form>
-{#                <a class="btn btn-warning" href="{% url 'product:delete_product_from_cart' pk=product.id %}">Delete</a>#}
             </td>
           </tr>
+                      {% endif %}
+
     {% endfor %}
-{% else %}
-        <h3>Немає товарів в корзині</h3>
-{% endif %}
+
+
 	</table>
 	</div>
 {% endblock main_content %}

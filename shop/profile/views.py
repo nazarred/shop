@@ -89,7 +89,7 @@ class ProfileUpdateView(LoginRequiredMixin, UserValidMixin, UpdateView):
         try:
             context['profile'] = self.object.profile
         except:
-            context['profile']= None
+            context['profile'] = None
         context['profile_form'] = ProfileForm(instance=context['profile'])
         return context
 

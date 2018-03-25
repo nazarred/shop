@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}My order{% endblock title %}
+
+
+{% block main_content %}
+    {% if messages %}
+
+            <ul class="messages">
+                {% for message in messages %}
+                    <div align="left"
+                            {% if message.tags == 'error' %}
+                                class="alert alert-danger"
+                            {% else %}
+                                class="alert alert-success"
+                            {% endif %}>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </ul>
+
+    {% endif %}
+
+
+<div class="pagination">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% endif %}
+        {% for page in paginator.page_range %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page }}">{{ page }}</a></li>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.next_page_number }}">&raquo;</a></li>
+        {% endif %}
+    </ul>
+</div>
+    <div class="table-responsive">
+    	    <table class="table-responsive table">
+		  <tr>
+			<th>Номер замовлення</th>
+			<th>дата</th>
+			<th>Вартість </th>
+			<th>Статус</th>
+              <th></th>
+		  </tr>
+      {% for order in object_list %}
+		  <tr class="cart-header">
+			<td># {{ order.id }}</td>
+            <td>{{ order.add_date }}</td>
+            <td class="item_price">{{ order.get_total_price  }}</td>
+            <td>{{ order.status }}</td>
+			<td class="add-check">
+                <a class="btn btn-warning" href="{% url 'order:user_orders_detail' pk=order.id %}">Detail</a>
+            </td>
+          </tr>
+    {% endfor %}
+
+
+	</table>
+	</div>
+{% endblock main_content %}
