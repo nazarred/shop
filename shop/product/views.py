@@ -95,21 +95,17 @@ def rating_change(request, pk):
     return JsonResponse(return_dict)
 
 
-class ProductsCartView(TemplateView):
+class ProductsCartView(ListView):
+    model = ProductInCart
     template_name = 'product/product_cart.html'
+    context_object_name = 'products'
+    paginate_by = 4
 
-
-# class ProductsCartView(ListView):
-#     model = ProductInCart
-#     template_name = 'product/product_cart.html'
-#     context_object_name = 'products'
-#     paginate_by = 4
-#
-#     def get_queryset(self):
-#         qs = super().get_queryset()
-#         qs = qs.user_cart(self.request)
-#         qs = qs.order_by('add_date').select_related('product__main_image', 'user')
-#         return qs
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.user_cart(self.request)
+        qs = qs.order_by('add_date').select_related('product__main_image', 'user')
+        return qs
 
 
 def add_product_in_cart(request, pk):

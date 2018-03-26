@@ -12,6 +12,7 @@ class UsersTest(TestCase):
                                              email='jlennon@beatles.com',
                                              password='glassonion')
 
+
     def test_redirect_login(self):
         response = self.client.post('/login/', {'login': 'john', 'password': 'glassonion'})
         client_user = auth.get_user(self.client)

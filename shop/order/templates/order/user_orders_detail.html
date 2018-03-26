@@ -22,6 +22,21 @@
             </ul>
 
     {% endif %}
+ <div class="pagination">
+    <ul class="pagination">
+        {% if products.has_previous %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_products.previous_page_number }}">&laquo;</a></li>
+        {% endif %}
+        {% for page in paginator.page_range %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page }}">{{ page }}</a></li>
+        {% endfor %}
+
+        {% if products.has_next %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.next_page_number }}">&raquo;</a></li>
+        {% endif %}
+    </ul>
+ </div>
+
 <table class="table-heading simpleCart_shelfItem">
     <h4>заказ <b>№ {{ object.id }}</b> від <b>{{ object.add_date }}</b></h4>
 		  <tr>
@@ -30,7 +45,7 @@
 			<th>Кількість </th>
 			<th>Всього</th>
 		  </tr>
-      {% for product in object.products.all %}
+      {% for product in products %}
 		  <tr class="cart-header">
 
 			<td class="ring-in"><a href="{{ product.product.get_absolute_url }}" class="at-in"><img src="{{ product.product.main_image.image.url }}" class="img-responsive" alt=""></a>
