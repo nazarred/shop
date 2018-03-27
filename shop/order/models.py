@@ -20,16 +20,31 @@ class Order(models.Model):
     last_name = models.CharField(max_length=40)
     phone_nmb = models.CharField(max_length=15)
     address = models.TextField()
-    products = models.ManyToManyField(ProductInCart)
     status = models.CharField(max_length=10, choices=ORDER_STATUS_CHOICE, default='Новий')
     add_date = models.DateTimeField(auto_now_add=True)
+    total_order_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
-   # попробувати зробити при допомозі агрегації
-    def get_total_price(self):
-        return sum(product.get_total_product_price for product in self.products.all())
+    def save(self, *args, **kwargs):
+        self.total_order_price = self.productinorder_set.aggregate(Sum('total_price'))['total_price__sum']
+        super(Order, self).save(*args, **kwargs)
 
     def __str__(self):
         user = self.user if self.user else 'Not register'
         return '%s (%s %s)' % (user, self.first_name, self.last_name)
 
-from .signals import delete_products_from_cart
+
+class ProductInOrder(models.Model):
+    order = models.ForeignKey(Order)
+    product = models.ForeignKey(Product)
+    pcs = models.PositiveIntegerField()
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    add_date = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        total_price = self.product.price*self.pcs
+        if self.total_price != total_price:
+            self.total_price = total_price
+        super(ProductInOrder, self).save(*args, **kwargs)
+
+
+from .signals import order_save

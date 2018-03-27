@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from product.models import ProductInCart
 from profile.models import Profile
 from .forms import OrderModelForm
-from .models import Order
+from .models import Order, ProductInOrder
 
 
 class OrderConfirmView(CreateView):
@@ -16,7 +16,11 @@ class OrderConfirmView(CreateView):
     template_name = 'order/confirm_order.html'
 
     def get_success_url(self):
-        return reverse('order:user_orders', kwargs={'pk': self.request.user.id})
+        if self.request.user.is_authenticated:
+            success_url = reverse('order:user_orders', kwargs={'pk': self.request.user.id})
+        else:
+            success_url = reverse('product_list')
+        return success_url
 
     def get_form_kwargs(self):
         kwargs = super(OrderConfirmView, self).get_form_kwargs()
@@ -32,18 +36,25 @@ class OrderConfirmView(CreateView):
             }
         return kwargs
 
-    def get_list_active_products_in_cart(self):
+    def get_active_products_in_cart(self):
         products = ProductInCart.objects.user_cart(self.request, is_active=True).select_related('product',
                                                                                                 "user")
-        return list(products)
+        return products
 
     def form_valid(self, form):
         order = form.save(commit=False)
         if self.request.user.is_authenticated:
             order.user = self.request.user
         order = form.save()
-        order.products.add(*self.get_list_active_products_in_cart())
-        ProductInCart.objects.user_cart(self.request, is_active=False).delete()
+        ProductInOrder.objects.bulk_create([
+            ProductInOrder(
+                order=order,
+                product=product_in_cart.product,
+                pcs=product_in_cart.pcs,
+                total_price=product_in_cart.get_total_product_price)
+            for product_in_cart in self.get_active_products_in_cart()
+        ])
+        ProductInCart.objects.user_cart(self.request).delete()
         messages.success(self.request, 'Order created')
         return super(OrderConfirmView, self).form_valid(form)
 
@@ -62,7 +73,7 @@ class UserOrderDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(UserOrderDetailView, self).get_context_data(**kwargs)
-        products_list = self.object.products.all().select_related('product__main_image')
+        products_list = self.object.productinorder_set.all().select_related('product__main_image')
         paginator = Paginator(products_list, 10)
         page = self.request.GET.get('page')
         try:

@@ -51,7 +51,7 @@
 		  <tr class="cart-header">
 			<td># {{ order.id }}</td>
             <td>{{ order.add_date }}</td>
-            <td class="item_price">{{ order.get_total_price  }}</td>
+            <td class="item_price">{{ order.total_order_price  }}</td>
             <td>{{ order.status }}</td>
 			<td class="add-check">
                 <a class="btn btn-warning" href="{% url 'order:user_orders_detail' pk=order.id %}">Detail</a>

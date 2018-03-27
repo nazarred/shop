@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 
 from product.models import Product, ProductInCart
-from .models import Order
+from .models import Order, ProductInOrder
 
 
 class OrderTest(TestCase):
@@ -10,30 +10,21 @@ class OrderTest(TestCase):
         self.user = User.objects.create_user(username='john',
                                              email='jlennon@beatles.com',
                                              password='glassonion')
-        for i in range(10):
-            name = 'test' + str(i)
-            self.product = Product.objects.create(name=name, price=i*123)
-            self.product_in_cart = ProductInCart.objects.create(product=self.product, user=self.user, pcs=1)
-        self.not_active_prod = Product.objects.create(name='not active', price=0, is_active=False)
-        self.not_active_product_in_cart = ProductInCart.objects.create(product=self.not_active_prod,
-                                                                       user=self.user, pcs=1)
-
-    def test_order_model(self):
-        order = Order.objects.create(
+        self.order = Order.objects.create(
             user=self.user,
             first_name='ftest',
             last_name='ltest',
             phone_nmb='12345',
             address='Dubno'
         )
-
-        product_in_cart_list = list(ProductInCart.objects.filter(user=self.user, product__is_active=True))
-        order.products.add(*product_in_cart_list)
-        order_price = order.get_total_price()
-        product_in_cart_price = 0
-        for prod in ProductInCart.objects.filter(user=self.user, product__is_active=True):
-            product_in_cart_price += prod.get_total_product_price
-        self.assertEqual(order_price, product_in_cart_price)
+        for i in range(10):
+            name = 'test' + str(i)
+            self.product = Product.objects.create(name=name, price=i*123)
+            self.product_in_cart = ProductInCart.objects.create(product=self.product, user=self.user, pcs=1)
+            self.product_in_order = ProductInOrder.objects.create(order=self.order, product=self.product, pcs=1)
+        self.not_active_prod = Product.objects.create(name='not active', price=0, is_active=False)
+        self.not_active_product_in_cart = ProductInCart.objects.create(product=self.not_active_prod,
+                                                                       user=self.user, pcs=1)
 
     def test_order_confirm_view_user(self):
         url = '/order/confirm/'
@@ -52,42 +43,24 @@ class OrderTest(TestCase):
         })
         products_in_cart_nmb = ProductInCart.objects.filter(user=self.user, in_order=False).count()
         self.assertRedirects(response, '/order/my-order/%s/' % self.user.id)
-        self.assertEqual(1, Order.objects.all().count())
+        self.assertEqual(2, Order.objects.all().count())
         self.assertEqual(0, products_in_cart_nmb)
-        order = Order.objects.get(user=self.user)
-        products_in_order_nmb = order.products.all().count()
+        order = Order.objects.all().last()
+        products_in_order_nmb = order.productinorder_set.all().count()
         self.assertEqual(active_products_nmb, products_in_order_nmb)
 
     def test_order_list_view(self):
         self.client.login(username='john', password='glassonion')
         url = '/order/my-order/%s/' % self.user.id
-        order = Order.objects.create(
-            user=self.user,
-            first_name='ftest',
-            last_name='ltest',
-            phone_nmb='12345',
-            address='Dubno'
-        )
-
-        product_in_cart_list = list(ProductInCart.objects.filter(user=self.user, product__is_active=True))
-        order.products.add(*product_in_cart_list)
         response = self.client.get(url)
-        self.assertContains(response, order.id)
-        self.assertContains(response, int(order.get_total_price()))
+        self.assertContains(response, self.order.id)
+        self.assertContains(response, int(self.order.total_order_price))
+        self.assertContains(response, self.order.id)
 
     def test_order_detail_view(self):
         self.client.login(username='john', password='glassonion')
-        order = Order.objects.create(
-            user=self.user,
-            first_name='ftest',
-            last_name='ltest',
-            phone_nmb='12345',
-            address='Dubno'
-        )
-        product_in_cart_list = list(ProductInCart.objects.filter(user=self.user, product__is_active=True))
-        order.products.add(*product_in_cart_list)
-        url = '/order/my-order/detail/%d/' % order.id
+        url = '/order/my-order/detail/%d/' % self.order.id
         response = self.client.get(url)
-        self.assertContains(response, order.id)
-        for prod_in_cart in product_in_cart_list:
+        self.assertContains(response, self.order.id)
+        for prod_in_cart in self.order.productinorder_set.all():
             self.assertContains(response, prod_in_cart.product.name)
