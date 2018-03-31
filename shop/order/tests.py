@@ -41,7 +41,7 @@ class OrderTest(TestCase):
             'phone_nmb': '12345',
             'address': 'Dubno'
         })
-        products_in_cart_nmb = ProductInCart.objects.filter(user=self.user, in_order=False).count()
+        products_in_cart_nmb = ProductInCart.objects.filter(user=self.user).count()
         self.assertRedirects(response, '/order/my-order/%s/' % self.user.id)
         self.assertEqual(2, Order.objects.all().count())
         self.assertEqual(0, products_in_cart_nmb)
