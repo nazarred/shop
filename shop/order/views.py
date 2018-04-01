@@ -36,24 +36,12 @@ class OrderConfirmView(CreateView):
             }
         return kwargs
 
-    def get_active_products_in_cart(self):
-        products = ProductInCart.objects.user_cart(self.request, is_active=True).select_related('product',
-                                                                                                "user")
-        return products
-
     def form_valid(self, form):
         order = form.save(commit=False)
         if self.request.user.is_authenticated:
             order.user = self.request.user
         order = form.save()
-        ProductInOrder.objects.bulk_create([
-            ProductInOrder(
-                order=order,
-                product=product_in_cart.product,
-                pcs=product_in_cart.pcs,
-                total_price=product_in_cart.get_total_product_price)
-            for product_in_cart in self.get_active_products_in_cart()
-        ])
+        ProductInOrder.objects.create_from_cart(self.request, order)
         ProductInCart.objects.user_cart(self.request).delete()
         messages.success(self.request, 'Order created')
         return super(OrderConfirmView, self).form_valid(form)

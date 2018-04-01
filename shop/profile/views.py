@@ -7,7 +7,7 @@ from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DetailView
 
-from .models import Profile
+from profile.models import Profile
 from .forms import UserRegistrationForm, ProfileForm
 from .mixins import NotLoginRequiredMixin, UserValidMixin
 
@@ -88,7 +88,7 @@ class ProfileUpdateView(LoginRequiredMixin, UserValidMixin, UpdateView):
         context = super(ProfileUpdateView, self).get_context_data()
         try:
             context['profile'] = self.object.profile
-        except:
+        except Profile.DoesNotExist:
             context['profile'] = None
         context['profile_form'] = ProfileForm(instance=context['profile'])
         return context
@@ -98,7 +98,7 @@ class ProfileUpdateView(LoginRequiredMixin, UserValidMixin, UpdateView):
         profile_form = ProfileForm(self.request.POST, instance=profile)
         if profile_form.is_valid():
             if profile:
-                update_profile = profile_form.save()
+                profile_form.save()
             else:
                 new_profile = profile_form.save(commit=False)
                 new_profile.user = self.object
@@ -126,4 +126,3 @@ class PasswordUpdateView(LoginRequiredMixin, UserValidMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'Password updated, sign in')
         return super(PasswordUpdateView, self).form_valid(form)
-

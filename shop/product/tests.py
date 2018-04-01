@@ -12,13 +12,13 @@ class ProductTest(TestCase):
         self.not_active_prod = Product.objects.create(name='not active', price=0, is_active=False)
 
         self.user = User.objects.create_user(username='john',
-                                            email='jlennon@beatles.com',
-                                            password='glassonion')
+                                             email='jlennon@beatles.com',
+                                             password='glassonion')
 
     def test_rating_signal(self):
         user1 = User.objects.create_user(username='john1',
-                                        email='jlennon@beatles.com',
-                                        password='glassonio')
+                                         email='jlennon@beatles.com',
+                                         password='glassonio')
         rating = ProductRating.objects.create(product=self.product, rating=5, user=self.user)
         rating1 = ProductRating.objects.create(product=self.product, rating=0, user=user1)
         avg = (rating.rating + rating1.rating)/self.product.productrating_set.all().count()
@@ -41,43 +41,20 @@ class ProductTest(TestCase):
 
     def test_nmb_of_product_rating(self):
         user1 = User.objects.create_user(username='john1',
-                                        email='jlennon@beatles.com',
-                                        password='glassonio')
+                                         email='jlennon@beatles.com',
+                                         password='glassonio')
         rating = ProductRating.objects.create(product=self.product, rating=5, user=self.user)
         rating1 = ProductRating.objects.create(product=self.product, rating=0, user=user1)
         nmb_rating = ProductRating.objects.filter(product=self.product).count()
         self.assertEqual(nmb_rating, self.product.get_nmb_of_rating())
 
 
-class ProductInCartTests(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(username='john',
-                                            email='jlennon@beatles.com',
-                                            password='glassonion')
-        self.first_product = Product.objects.create(name='first', price=10)
-        self.second_product = Product.objects.create(name='second', price=20)
-        self.third_product = Product.objects.create(name='third', price=30)
-        self.first_product_in_cart = ProductInCart.objects.create(product=self.first_product, user=self.user, pcs=1)
-        self.second_product_in_cart = ProductInCart.objects.create(product=self.second_product, user=self.user, pcs=2)
-        self.third_product_in_cart = ProductInCart.objects.create(product=self.third_product, user=self.user, pcs=3)
-
-    def test_product_in_cart_save(self):
-        pcs = 2
-        nmb_of_product_in_cart = ProductInCart.objects.all().count()
-        pcs_first = self.first_product_in_cart.pcs
-        test_product_in_cart = ProductInCart(product=self.first_product, user=self.user, pcs=pcs)
-        test_product_in_cart.save()
-        pcs_last = ProductInCart.objects.get(user=self.user, product=self.first_product).pcs
-        self.assertEqual(pcs_first+pcs, pcs_last)
-        self.assertEqual(nmb_of_product_in_cart, ProductInCart.objects.all().count())
-
-
 class ProductCommentTest(TestCase):
     def test_comment_view(self):
         product = Product.objects.create(name='first', price=10)
         user = User.objects.create_user(username='john',
-                                            email='jlennon@beatles.com',
-                                            password='glassonion')
+                                        email='jlennon@beatles.com',
+                                        password='glassonion')
         self.client.login(username='john', password='glassonion')
         comment = "some comment"
         response = self.client.post('/product/comments/%d/' % product.id, {'text': comment})
@@ -90,14 +67,17 @@ class ProductCommentTest(TestCase):
 class ProductInCartTest(TestCase):
     def test_add_product_in_cart(self):
         product = Product.objects.create(name='first', price=10)
+        product_1 = Product.objects.create(name='second', price=5)
         user = User.objects.create_user(username='john',
-                                            email='jlennon@beatles.com',
-                                            password='glassonion')
+                                        email='jlennon@beatles.com',
+                                        password='glassonion')
         self.client.login(username='john', password='glassonion')
-        pcs = 10
-        response = self.client.post('/product/add_product_in_cart/%d/' % product.id, {'pcs': pcs})
-        self.assertRedirects(response, product.get_absolute_url())
-        self.assertEqual(ProductInCart.objects.all().count(), 1)
+        pcs_1, pcs_2 = 1, 3
+        response = self.client.post('/product/add_product_in_cart/%d/' % product.id, {'pcs': pcs_1})
+        response = self.client.post('/product/add_product_in_cart/%d/' % product.id, {'pcs': pcs_2})
+        response = self.client.post('/product/add_product_in_cart/%d/' % product_1.id, {'pcs': pcs_2})
+        self.assertRedirects(response, product_1.get_absolute_url())
+        self.assertEqual(ProductInCart.objects.all().count(), 2)
+        self.assertEqual(ProductInCart.objects.get(id=1).pcs, pcs_1+pcs_2)
         response = self.client.get('/product/product_in_cart/')
         self.assertContains(response, product.name)
-

@@ -36,8 +36,3 @@ class UserRegistrationForm(forms.ModelForm):
         # self.instance.username = self.cleaned_data['username']
         password_validation.validate_password(self.cleaned_data['password1'], self.instance)
         return cd['password']
-
-
-
-
-

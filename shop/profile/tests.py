@@ -12,7 +12,6 @@ class UsersTest(TestCase):
                                              email='jlennon@beatles.com',
                                              password='glassonion')
 
-
     def test_redirect_login(self):
         response = self.client.post('/login/', {'login': 'john', 'password': 'glassonion'})
         client_user = auth.get_user(self.client)
@@ -106,4 +105,3 @@ class UsersTest(TestCase):
         response = self.client.get(profile_url)
         self.assertContains(response, 'name-test')
         self.assertContains(response, '066-345-3285')
-

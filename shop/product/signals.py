@@ -7,5 +7,4 @@ from .models import ProductRating
 @receiver(post_delete, sender=ProductRating)
 def save_product(sender, instance, **kwargs):
     product = instance.product
-    product.save()
-
+    product.recalculate_rating()

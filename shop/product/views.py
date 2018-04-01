@@ -2,8 +2,8 @@ import logging
 from django.contrib import messages, auth
 from django.http import JsonResponse, Http404
 from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, DetailView, DeleteView, TemplateView
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, DeleteView
 
 from .forms import CommentModelForm, ProductInCartForm
 from .models import Product, ProductRating, ProductInCart
@@ -19,7 +19,7 @@ class ProductsList(ListView):
     template_name = 'main_page.html'
     context_object_name = 'products'
     paginate_by = PRODUCTS_ON_PAGE
-    queryset = model.active_product.all().select_related('main_image')
+    queryset = model.active_products.all().select_related('main_image')
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -35,22 +35,6 @@ class ProductsList(ListView):
         context['sort'] = self.request.GET.get('sort', 'name')
         context['reverse'] = self.request.GET.get('reverse', '')
         return context
-
-
-# def product_list(request):
-#     sort = request.GET.get('sort', 'name')
-#     products_list = Product.objects.all().order_by('%s' % sort).select_related('main_image')
-#     if request.GET.get('reverse', ''):
-#         products_list = products_list.reverse()
-#     paginator = Paginator(products_list, 3)
-#     page = request.GET.get('page')
-#     try:
-#         products = paginator.page(page)
-#     except PageNotAnInteger:
-#         products = paginator.page(1)
-#     except EmptyPage:
-#         products = paginator.page(paginator.num_pages)
-#     return render(request, 'main_page.html', locals())
 
 
 class ProductDetailView(DetailView):
@@ -124,7 +108,14 @@ def add_product_in_cart(request, pk):
                     logger.warning('session is not created')
                     raise Http404
                 cart.session = session
-            cart.save()
+            product_in_cart, created = ProductInCart.objects.get_or_create(
+                user=cart.user,
+                session=cart.session,
+                product=product,
+                defaults={'pcs': cart.pcs}
+            )
+            if not created:
+                product_in_cart.increment_pcs(cart.pcs)
             messages.success(request, 'Продукт успішно добавлений')
     return redirect(product.get_absolute_url())
 
@@ -132,4 +123,3 @@ def add_product_in_cart(request, pk):
 class DeleteProductsFromCartView(DeleteView):
     model = ProductInCart
     success_url = reverse_lazy('product:product_in_cart')
-

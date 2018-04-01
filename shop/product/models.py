@@ -1,9 +1,11 @@
 from django.db import models
+from django.db.models import Manager
 from django.contrib.auth.models import User
 from django.db.models import Avg
 from django.contrib.sessions.models import Session
 
-from .managers import ActiveProductManager, CartManager, CartQuerySet
+
+from .managers import ActiveProductManager, CartQuerySet
 
 WIDTH_OF_RATING_STAR = 32  # ширина однієї зірочки рейтинга (static/images/stars.png)
 
@@ -18,7 +20,7 @@ class Product(models.Model):
     main_image = models.ForeignKey('ProductImage', related_name='prod', null=True, blank=True)
     is_active = models.BooleanField(default=True)
     objects = models.Manager()
-    active_product = ActiveProductManager()
+    active_products = ActiveProductManager()
 
     def get_comments(self):
         return self.productcomment_set.all().select_related('user').order_by('created')
@@ -33,9 +35,9 @@ class Product(models.Model):
     def get_not_main_images(self):
         return self.images.filter(is_main=False)
 
-    def save(self, *args, **kwargs):
+    def recalculate_rating(self):
         self.average_rating = self.productrating_set.all().aggregate(Avg('rating'))['rating__avg']
-        super(Product, self).save(*args, **kwargs)
+        self.save()
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
@@ -51,20 +53,18 @@ class ProductInCart(models.Model):
     user = models.ForeignKey(User, related_name='product_in_cart', blank=True, null=True, on_delete=models.CASCADE)
     session = models.ForeignKey(Session, blank=True, null=True, on_delete=models.CASCADE)
     add_date = models.DateTimeField(auto_now_add=True)
-    objects = CartManager.from_queryset(CartQuerySet)()
+    objects = Manager.from_queryset(CartQuerySet)()
+
+    class Meta:
+        unique_together = ('product', 'user', 'session')
 
     @property
     def get_total_product_price(self):
         return self.product.price*self.pcs
 
-    def save(self, *args, **kwargs):
-        try:
-            product = ProductInCart.objects.get(product=self.product,
-                                                user=self.user, session=self.session)
-            product.pcs += self.pcs
-            super(ProductInCart, product).save(*args, **kwargs)
-        except ProductInCart.DoesNotExist:
-            super(ProductInCart, self).save(*args, **kwargs)
+    def increment_pcs(self, pcs):
+        self.pcs += pcs
+        self.save()
 
     def __str__(self):
         return "%s" % self.product
@@ -94,5 +94,6 @@ class ProductImage(models.Model):
     def __str__(self):
         main = '(Головна)' if self.is_main else ''
         return "%s... %s" % (self.product.name[:15], main)
+
 
 from .signals import save_product
