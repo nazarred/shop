@@ -6,6 +6,7 @@
 
 
 {% block main_content %}
+    {% load thumbnail %}
     {% if messages %}
 
             <ul class="messages">
@@ -61,7 +62,9 @@
                     {{ product.name  }}
                 </a>
             </h4>
-              <img src="{{ product.main_image.image.url }}" width="300" align="center">
+              {% thumbnail product.main_image.image "300x225" crop="center" as im %}
+                <img src="{{ im.url }}" width="{{ im.width }}" align="center">
+              {% endthumbnail %}
               <p>{{ product.short_description|truncatechars_html:70 }}</p>
               <h4><b>Ціна: </b>{{ product.price }} грн</h4>
               <h4><b>Рейтинг: </b>{{ product.average_rating|floatformat:1 }}</h4>

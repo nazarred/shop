@@ -47,15 +47,18 @@
             </div>
 
           {% if user.is_authenticated %}
-               <p class="navbar-text navbar-right" >Ви авторизовані як <b>{{ user.username }}</b><a href="{% url 'logout' %}" class="btn btn-success">Вихід</a></p>
+               <p class="navbar-text navbar-right" >
+                   Ви авторизовані як <b><a href="{% url 'profile:detail' pk=user.id %}">{{ user.username }}</a></b>
+                   <a href="{% url 'logout' %}" class="btn btn-success">Вихід</a>
+               </p>
           {% else %}
-              <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'login' %}">
+              <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'login' %}?page={{ request.path }}">
                 {% csrf_token %}
                 <div class="form-group">
-                  <input type="text" placeholder="Login" class="form-control" name="login">
+                  <input type="text" placeholder="Login" class="form-control" name="login" required>
                 </div>
                 <div class="form-group">
-                  <input type="password" placeholder="Password" class="form-control" name="password">
+                  <input type="password" placeholder="Password" class="form-control" name="password" required>
                 </div>
                 <button type="submit" class="btn btn-success">Sign in</button>
                 <a href="{% url 'profile:registration' %}" class="btn btn-success">Registration</a>

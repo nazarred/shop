@@ -1,12 +1,15 @@
+import logging
 from django.contrib import messages, auth
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse
-from django.views.generic import ListView, DetailView, DeleteView, TemplateView
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, DeleteView
 
 from .forms import CommentModelForm, ProductInCartForm
 from .models import Product, ProductRating, ProductInCart
 from .utils import get_session_instance
+
+logger = logging.getLogger(__name__)
 
 PRODUCTS_ON_PAGE = 3
 
@@ -16,7 +19,7 @@ class ProductsList(ListView):
     template_name = 'main_page.html'
     context_object_name = 'products'
     paginate_by = PRODUCTS_ON_PAGE
-    queryset = model.active_product.all().select_related('main_image')
+    queryset = model.active_products.all().select_related('main_image')
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -32,22 +35,6 @@ class ProductsList(ListView):
         context['sort'] = self.request.GET.get('sort', 'name')
         context['reverse'] = self.request.GET.get('reverse', '')
         return context
-
-
-# def product_list(request):
-#     sort = request.GET.get('sort', 'name')
-#     products_list = Product.objects.all().order_by('%s' % sort).select_related('main_image')
-#     if request.GET.get('reverse', ''):
-#         products_list = products_list.reverse()
-#     paginator = Paginator(products_list, 3)
-#     page = request.GET.get('page')
-#     try:
-#         products = paginator.page(page)
-#     except PageNotAnInteger:
-#         products = paginator.page(1)
-#     except EmptyPage:
-#         products = paginator.page(paginator.num_pages)
-#     return render(request, 'main_page.html', locals())
 
 
 class ProductDetailView(DetailView):
@@ -67,7 +54,7 @@ class ProductDetailView(DetailView):
 
 def comments(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated:
         comment_form = CommentModelForm(request.POST)
         if comment_form.is_valid():
             comment = comment_form.save(commit=False)
@@ -92,21 +79,17 @@ def rating_change(request, pk):
     return JsonResponse(return_dict)
 
 
-class ProductsCartView(TemplateView):
+class ProductsCartView(ListView):
+    model = ProductInCart
     template_name = 'product/product_cart.html'
+    context_object_name = 'products'
+    paginate_by = 4
 
-
-# class ProductsCartView(ListView):
-#     model = ProductInCart
-#     template_name = 'product/product_cart.html'
-#     context_object_name = 'products'
-#     paginate_by = 4
-#
-#     def get_queryset(self):
-#         qs = super().get_queryset()
-#         qs = qs.user_cart(self.request)
-#         qs = qs.order_by('add_date').select_related('product__main_image', 'user')
-#         return qs
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.user_cart(self.request)
+        qs = qs.order_by('add_date').select_related('product__main_image', 'user')
+        return qs
 
 
 def add_product_in_cart(request, pk):
@@ -121,13 +104,22 @@ def add_product_in_cart(request, pk):
                 cart.user = request.user
             else:
                 session = get_session_instance(request)  # можливо є і інший спосіб, але я його ще не знайшов
+                if not session:
+                    logger.warning('session is not created')
+                    raise Http404
                 cart.session = session
-            cart.save()
+            product_in_cart, created = ProductInCart.objects.get_or_create(
+                user=cart.user,
+                session=cart.session,
+                product=product,
+                defaults={'pcs': cart.pcs}
+            )
+            if not created:
+                product_in_cart.increment_pcs(cart.pcs)
             messages.success(request, 'Продукт успішно добавлений')
     return redirect(product.get_absolute_url())
 
 
 class DeleteProductsFromCartView(DeleteView):
     model = ProductInCart
-    success_url = '/product/product_in_cart/'
-
+    success_url = reverse_lazy('product:product_in_cart')

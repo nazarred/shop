@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AlterModelManagers(
             name='product',
             managers=[
-                ('active_product', django.db.models.manager.Manager()),
+                ('active_products', django.db.models.manager.Manager()),
             ],
         ),
     ]

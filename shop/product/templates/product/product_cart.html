@@ -22,6 +22,8 @@
             </ul>
 
     {% endif %}
+    {% if products_in_cart %}
+        <a href="{% url 'order:confirm' %}" class="btn btn-info">Замовити</a>
 
 <div class="pagination">
     <ul class="pagination">
@@ -59,7 +61,7 @@
             {% if product.product.is_active %}
                 <td>{{ product.product.price }}</td>
                 <td>{{ product.pcs }}</td>
-                <td class="item_price">{{ product.get_total_price }}</td>
+                <td class="item_price">{{ product.get_total_product_price }}</td>
             {% else %}
                 <td colspan="3">
                     <div class="alert alert-danger">
@@ -76,8 +78,9 @@
             </td>
           </tr>
     {% endfor %}
-
-
+{% else %}
+        <h3>Немає товарів в корзині</h3>
+{% endif %}
 	</table>
 	</div>
 {% endblock main_content %}

@@ -7,15 +7,15 @@ class ActiveProductManager(models.Manager):
         return super(ActiveProductManager, self).get_queryset().filter(is_active=True)
 
 
-class CartManager(models.Manager):
-    pass
-
-
 class CartQuerySet(models.QuerySet):
-    def user_cart(self, request):
+    def user_cart(self, request, is_active=None):
         if request.user.is_authenticated:
             qs = self.filter(user=request.user)
+            if is_active is not None:
+                qs = qs.filter(product__is_active=is_active)
         else:
             session = get_session_instance(request)
             qs = self.filter(session=session)
+            if is_active is not None:
+                qs = qs.filter(product__is_active=is_active)
         return qs

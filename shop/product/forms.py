@@ -23,4 +23,4 @@ class ProductInCartForm(forms.ModelForm):
 
     class Meta:
         model = ProductInCart
-        exclude = ["product", 'user', 'session']
+        fields = ['pcs']
