@@ -21,11 +21,11 @@
                   </ol>
                   <div class="carousel-inner">
                         <div class="item active">
-                          <img src="/{{ product.main_image.image.url }}" alt="First slide">
+                          <img src="{{ product.main_image.image.url }}" alt="First slide">
                         </div>
                         {% for image in product.get_not_main_images %}
                          <div class="item">
-                            <img src="/{{ image.image.url }}" alt="First slide">
+                            <img src="{{ image.image.url }}" alt="First slide">
                         </div>
                         {% endfor %}
                   </div>
@@ -43,10 +43,10 @@
                         <b>Ціна</b>{{ product.price }}
                     </h4>
                 </div>
-                <form id="form_buying_product" action="{% url 'product:product_detail' pk=product.id %}" method="post">
+                <form id="form_buying_product" action="{% url 'product:add_product_in_cart' pk=product.id %}" method="post">
                     {% csrf_token %}
-                    <input type="number" name="pcs"><span> шт. </span>
-                    <button type="submit" id="submit_btn" class="btn btn-success btn-buy">Купити</button>
+                    {{ cart_form.as_p }}
+                    <button type="submit" id="submit_btn" class="btn btn-success btn-buy">В корзину</button>
                 </form>
                 <div>
                     {% if messages %}
