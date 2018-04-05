@@ -33,6 +33,5 @@ class UserRegistrationForm(forms.ModelForm):
         cd = self.cleaned_data
         if cd['password'] != cd['password1']:
             raise forms.ValidationError('Паролі не співпадають')
-        # self.instance.username = self.cleaned_data['username']
         password_validation.validate_password(self.cleaned_data['password1'], self.instance)
         return cd['password']
