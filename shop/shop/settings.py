@@ -174,3 +174,26 @@ LOGGING = {
         },
     },
 }
+
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = '587'
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = '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'
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "cache"
+    }
+}
+
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+# SESSION_COOKIE_AGE = 60

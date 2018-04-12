@@ -6,7 +6,6 @@ $(document).ready(function() {
     var user = form.data('user');
     var user_rating = form.data('user_rating');
 
-
     if (user_rating) {
         voted = 1;
         $('#your_rating').text("Ви вже голосували оцінка: "+user_rating);

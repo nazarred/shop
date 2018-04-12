@@ -7,7 +7,8 @@
 
 {% block main_content %}
     {% load thumbnail %}
-
+    {% load cache %}
+    {% cache 900 product_detail product %}
     <div class="container">
         <div class="row">
             <div class="col-lg-6">
@@ -108,7 +109,7 @@
             </div>
         </div>
     </div>
-
+{% endcache %}
   <div class="comments">
 
       <h3 class="title-comments">Коментарi</h3>

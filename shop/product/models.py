@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Manager
 from django.contrib.auth.models import User
 from django.db.models import Avg
-from django.contrib.sessions.models import Session
+# from django.contrib.sessions.models import Session
 
 
 from .managers import ActiveProductManager, CartQuerySet
@@ -51,7 +51,9 @@ class ProductInCart(models.Model):
     product = models.ForeignKey(Product, related_name='product_in_cart')
     pcs = models.PositiveIntegerField()
     user = models.ForeignKey(User, related_name='product_in_cart', blank=True, null=True, on_delete=models.CASCADE)
-    session = models.ForeignKey(Session, blank=True, null=True, on_delete=models.CASCADE)
+    # session = models.ForeignKey(Session, blank=True, null=True, on_delete=models.CASCADE)
+    session = models.CharField(max_length=45, blank=True, null=True)
+
     add_date = models.DateTimeField(auto_now_add=True)
     objects = Manager.from_queryset(CartQuerySet)()
 

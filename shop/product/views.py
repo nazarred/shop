@@ -3,11 +3,11 @@ from django.contrib import messages, auth
 from django.http import JsonResponse, Http404
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, DeleteView
+from django.views.generic import ListView, DetailView, DeleteView, TemplateView
 
 from .forms import CommentModelForm, ProductInCartForm
 from .models import Product, ProductRating, ProductInCart
-from .utils import get_session_instance
+# from .utils import get_session_instance
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,6 @@ class ProductsList(ListView):
         qs = super().get_queryset()
         sort = self.request.GET.get('sort', 'name')
         qs = qs.order_by('%s' % sort)
-        print(self.request.session.model)
         if self.request.GET.get('reverse', None):
             qs = qs.reverse()
         return qs
@@ -79,17 +78,9 @@ def rating_change(request, pk):
     return JsonResponse(return_dict)
 
 
-class ProductsCartView(ListView):
-    model = ProductInCart
+class ProductsCartView(TemplateView):
+    # Список продуктів в корзині береться з контекст процесора product/context_processor.py
     template_name = 'product/product_cart.html'
-    context_object_name = 'products'
-    paginate_by = 4
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        qs = qs.user_cart(self.request)
-        qs = qs.order_by('add_date').select_related('product__main_image', 'user')
-        return qs
 
 
 def add_product_in_cart(request, pk):
@@ -103,11 +94,11 @@ def add_product_in_cart(request, pk):
             if request.user.is_authenticated:
                 cart.user = request.user
             else:
-                session = get_session_instance(request)  # можливо є і інший спосіб, але я його ще не знайшов
-                if not session:
+                session_key = request.session.session_key
+                if not session_key:
                     logger.warning('session is not created')
                     raise Http404
-                cart.session = session
+                cart.session = session_key
             product_in_cart, created = ProductInCart.objects.get_or_create(
                 user=cart.user,
                 session=cart.session,

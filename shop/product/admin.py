@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Product, ProductRating, ProductComment, ProductImage, ProductInCart
+from .forms import ProductModelForm
 
 
 class ProductRatingInline(admin.TabularInline):
@@ -34,6 +35,7 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline, ProductCommentInline, ProductRatingInline]
     list_display = ['name', 'add_date', 'average_rating', 'price']
     list_filter = ['add_date', 'name']
+    # form = ProductModelForm
 
     class Meta:
         model = Product

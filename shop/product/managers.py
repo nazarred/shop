@@ -1,5 +1,5 @@
 from django.db import models
-from .utils import get_session_instance
+# from .utils import get_session_instance
 
 
 class ActiveProductManager(models.Manager):
@@ -14,8 +14,8 @@ class CartQuerySet(models.QuerySet):
             if is_active is not None:
                 qs = qs.filter(product__is_active=is_active)
         else:
-            session = get_session_instance(request)
-            qs = self.filter(session=session)
+            session_key = request.session.session_key
+            qs = self.filter(session=session_key)
             if is_active is not None:
                 qs = qs.filter(product__is_active=is_active)
         return qs

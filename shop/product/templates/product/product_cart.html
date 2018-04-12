@@ -27,15 +27,15 @@
 
 <div class="pagination">
     <ul class="pagination">
-        {% if page_obj.has_previous %}
-            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% if products_in_cart.has_previous %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ products_in_cart.previous_page_number }}">&laquo;</a></li>
         {% endif %}
-        {% for page in paginator.page_range %}
+        {% for page in paginator_for_cart.page_range %}
             <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page }}">{{ page }}</a></li>
         {% endfor %}
 
-        {% if page_obj.has_next %}
-            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ page_obj.next_page_number }}">&raquo;</a></li>
+        {% if products_in_cart.has_next %}
+            <li><a href="?sort={{ sort }}&reverse={{ reverse }}&page={{ products_in_cart.next_page_number }}">&raquo;</a></li>
         {% endif %}
     </ul>
 </div>
