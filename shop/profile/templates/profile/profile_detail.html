@@ -5,7 +5,7 @@
 {% block title %}{{ user }}{% endblock title %}
 
 
-{% block main_content %}
+{% block content %}
     {% if messages %}
 
             <ul class="messages">
@@ -61,4 +61,4 @@
     <a href="{% url 'profile:update-password' pk=user.id %}" class="btn btn-success">Change password</a>
 
 
-{% endblock main_content %}
+{% endblock content %}

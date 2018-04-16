@@ -23,6 +23,7 @@ import profile.views
 from product import views
 
 urlpatterns = [
+    url(r'^accounts/', include('allauth.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.ProductsList.as_view(), name='product_list'),
     url(r'^product/', include('product.urls', namespace='product')),
