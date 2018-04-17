@@ -50,7 +50,7 @@
               <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'account_logout' %}?next={{ request.path }}">
                     {% csrf_token %}
                        <div class="navbar-text">
-                           Ви авторизовані як <b><a href="{% url 'profile:detail' pk=user.id %}">{{ user.username }}</a></b>
+                           Ви авторизовані як <b><a href="{% url 'profile:detail' %}">{{ user.username }}</a></b>
                         </div>
                        <button type="submit" class="btn btn-success">Вихід</button>
               </form>

@@ -27,9 +27,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.ProductsList.as_view(), name='product_list'),
     url(r'^product/', include('product.urls', namespace='product')),
-    url(r'^logout/', profile.views.logout, name='logout'),
-    url(r'^login/', profile.views.login, name='login'),
-    url(r'^profile/', include('profile.urls', namespace='profile')),
+    url(r'^accounts/', include('profile.urls', namespace='profile')),
     url(r'^order/', include('order.urls', namespace='order')),
 
 ]

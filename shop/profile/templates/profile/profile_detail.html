@@ -43,7 +43,17 @@
                 </tr>
                 <tr>
                   <td>Email</td>
-                  <td>{{ user.email }}</td>
+                  <td>
+                      {% for emailaddress in user.emailaddress_set.all %}
+                          {{ emailaddress }}
+                          {% if not emailaddress.verified %}
+                            <span class="label label-danger">not verified</span>
+                           {% else %}
+                              <span class="label label-success">verified</span>
+                          {% endif %} <br>
+                      {% endfor %}
+                      <a class="btn btn-primary" href="{% url 'account_email' %}">Confirm/Change</a>
+                  </td>
                 </tr>
                 </tr>
                 <tr>
@@ -57,8 +67,8 @@
               </tbody>
         </table>
     </div>
-    <a href="{% url 'profile:update' pk=user.id %}" class="btn btn-success">Update profile</a>
-    <a href="{% url 'profile:update-password' pk=user.id %}" class="btn btn-success">Change password</a>
+    <a href="{% url 'profile:update' %}" class="btn btn-success">Update profile</a>
+    <a href="{% url 'account_change_password' %}" class="btn btn-success">Change password</a>
 
 
 {% endblock content %}
