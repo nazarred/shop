@@ -38,8 +38,8 @@ if settings.DEBUG:
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
 
-    if settings.MEDIA_ROOT:
-        urlpatterns += static(settings.MEDIA_URL,
-                              document_root=settings.MEDIA_ROOT)
-
-urlpatterns += staticfiles_urlpatterns()
+#     if settings.MEDIA_ROOT:
+#         urlpatterns += static(settings.MEDIA_URL,
+#                               document_root=settings.MEDIA_ROOT)
+#
+# urlpatterns += staticfiles_urlpatterns()

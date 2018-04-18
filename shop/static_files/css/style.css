@@ -1,0 +1,239 @@
+
+/*--cart--*/
+.itemContainer{
+	width:100%;
+	float:left;
+}
+.itemContainer div{
+	float:left;
+	margin: 5px 20px 5px 20px ;
+}
+.itemContainer a{
+	text-decoration:none;
+}
+.cartHeaders{
+	width:100%;
+	float:left;
+}
+.cartHeaders div{
+	float:left;
+	margin: 5px 20px 5px 20px ;
+}
+.item_add {
+  color: #000;
+  border:none;
+}	
+a.item_add {
+ text-decoration: none;
+}		
+.grid_1 img{
+	margin-bottom:1em;
+}
+.box_1 h3{
+  color: #000;
+  font-size: 1em;
+}
+.box_1 h3 img{
+	margin-left: 5px;
+}
+.box_1 p a{
+  color: #B5B3B3;
+  font-size: 0.77em;
+}
+.total {
+  display: inline-block;
+}
+.cart.box_1{
+	float: right;
+	margin-top: 2px;
+}
+
+.heart{
+	float:left;
+	margin-top: 0.7em;
+}
+.heart li{
+	display:inline-block;
+	border-right: 1px solid #EFEFEF;
+}
+.heart li  a{
+	font-size: 0.9em;
+    color: #3A3A3A;
+	margin:0 1em;
+    outline: none;	
+}
+.heart li:last-child {
+	border-right: none;
+}
+.heart span{
+	
+}
+.cart{
+	float:right;
+}
+.search-right {
+    padding: 0.6em 0 0;
+}
+/*--//header--*/
+
+a.cart{
+  padding: 0.3em 0.7em;
+  color: #FFF;
+  background: #52D0C4;
+  margin: 1.5em 0 0;
+  font-size: 1em;
+  display:inline-block;
+  line-height: 1.6em;
+  text-align: center;
+  text-decoration:none;
+}
+a.cart:hover{
+	background: #000;
+}
+/*----*/
+
+/*----*/
+.tab-head {
+    padding: 3em 0 0;
+}
+.tabs li a {
+    padding: 1em;
+    font-size: 0.9em;
+    color: #B3B3B3;
+    border-bottom: 1px solid #EDEDED;
+}
+.tabs  li a:hover,.tabs  li.active a{
+	background:#F67777 !important;
+	color:#fff;
+}
+.tab-content {
+    padding-left: 0px;
+}
+.facts p {
+    color: #B3B3B3;
+    font-size: 0.9em;
+    line-height: 2em;
+    padding: 0 0 1em;
+}
+.facts ul li {
+    list-style: none;
+    color: #B3B3B3;
+    font-size: 0.9em;
+    padding: 0.3em 0;
+}
+.facts ul li span{
+    padding-right: 0.5em;
+}
+
+table{
+	width:100%;
+	  margin: 0em 0 2em;
+}
+th{
+	color: #000000;
+    font-size: 1.4em;
+    font-weight: 400;
+    font-family: 'Ubuntu-Regular';
+}
+th, td {
+    padding: 10px;
+}
+td{
+	color:#b2b2b2;
+  font-size: 1em;
+}
+a.at-in {
+  float: left;
+    width: 20%;
+}
+.sed {
+    float: right;
+	width: 74%;
+}
+.sed h5{
+  	font-size: 1.1em;
+	font-family: 'Ubuntu-Regular';
+}
+.sed h5 a{
+    color: #F67777;
+  	text-decoration:none;
+}
+.sed h5 a:hover{
+    color: #000;
+}
+.sed p{
+    color:#b2b2b2;
+	font-size:0.8em;
+	line-height:1.8em;
+	padding:1em 0 0;
+}
+.table-responsive {
+    border: none;
+}
+.ring-in{
+	width:45%;
+}
+
+.ring-in{
+  position: relative;
+}
+.close1, .close2, .close3 {
+  background: url('../images/close.png') no-repeat 0px 0px ;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  position: absolute;
+  right: 5px;
+  bottom: 10px;
+  -webkit-transition: color 0.2s ease-in-out;
+  -moz-transition: color 0.2s ease-in-out;
+  -o-transition: color 0.2s ease-in-out;
+  transition: color 0.2s ease-in-out;
+}
+
+.box_1 h3 {
+    font-size: 0.8em;
+}
+.box_1 p a {
+    font-size: 0.7em;
+}
+.box_1 h3 img {
+    width: 25%;
+}
+.cart.box_1 {
+    margin-top: 0px;
+}
+.heart {
+    margin-top: 0em;
+}
+}
+@media(max-width:991px){
+
+.menu-top {
+    width: 660px;
+    padding: 1em;
+}
+
+th.table-grid {
+    padding: 1em 6em;
+}
+td.add-check a {
+    width: 107px;
+}
+
+th.table-grid {
+    padding: 0 5em;
+}
+th{
+	padding:0 3em;
+}
+td {
+    font-size: 0.8em;
+}
+.sed p {
+    font-size: 0.88em;
+    line-height: 1.6em;
+}
+.sed h5 {
+    font-size: 1em;
+}
